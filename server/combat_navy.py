@@ -1,7 +1,7 @@
 #combat range of the unit
 # units will be destryoer, submarine, and transport ship
 range = {
-    "destroyer" : 2,
+    "destroyer" : 1,
     "submarine" : 2,
     "transport" : 1
 }
@@ -17,6 +17,8 @@ sight = {
 ineffectiveThreshold = 0.25 # 50%
 
 firepower_scaling = 0.50
+
+pDetect = 1.0
 
 
 #firepower matrixes for the units against other ubnits
