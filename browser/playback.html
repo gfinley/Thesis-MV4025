@@ -1,0 +1,114 @@
+<html>
+<meta charset="utf-8"/>
+<script src="map.js"></script>
+<script src="unit.js"></script>
+<script src="svg-unit-placement.js"></script>
+<script src="svg-util.js"></script>
+<script src="svg-map-view.js"></script>
+<script src="svg-unit-symbol.js"></script>
+<script src="svg-gui.js"></script>
+<script src="svg-setup-marker.js"></script>
+<script src="style.js"></script>
+<script src="terrain.js"></script>
+<script src="human-player-control.js"></script>
+<script src="test-data.js"></script>
+<script src="mobility.js"></script>
+<script src="combat.js"></script>
+<script src="replay.js"></script>
+<script src="unit-placement-control.js"></script>
+<script>
+
+var falseColorMode = false;
+
+function processScenarioJSON(str) {
+    let scenarioJson = JSON.parse(str).parameters;
+    
+    Map.fromPortable(scenarioJson.map);
+    
+    var width = 5;  // Hardcoded width for now
+    var x_hex_margin = 6;
+    var y_hex_margin = 1;
+    var palette_width = 4;
+    var x_palette_margin = 0.5;
+    var y_palette_margin = 0.5;
+    var param = {
+        width:width,
+        x_hex_margin:x_hex_margin,
+        y_hex_margin:y_hex_margin,
+        palette_width:palette_width,
+        x_palette_margin:x_palette_margin,
+        y_palette_margin:y_palette_margin
+    };
+    SVG.createView(param);
+
+    Unit.fromPortable2(scenarioJson.units);
+}
+
+var messages;
+var message_index = 0;
+var colors = {};
+
+function next_message() {
+    //console.log("next_message: reading message "+messages[message_index]);
+    if (message_index >= messages.length) {
+        console.log("No more messages");
+        return;
+    }
+
+    let messageO = JSON.parse(messages[message_index])
+
+    if (messageO.type=="parameters") {
+        processScenarioJSON(messages[message_index]);
+        ++ message_index;
+        messageO = JSON.parse(messages[message_index]);
+    }
+
+    let msgO = messageO.observation;
+    if ("debug" in messageO)
+        if ("colors" in messageO.debug)
+            colors = messageO.debug.colors;
+    let debugO 
+    if (msgO.type === "role-assigned") {
+        init();
+        return;
+    }
+    for (let u of msgO.units)
+        if (u.uniqueId === "blue 12/1/1")
+            console.log(u);
+    ++ message_index;
+    for (let unitObs of msgO.units) {
+        uniqueId = unitObs.faction+" "+unitObs.longName;
+        let unit = Unit.unitIndex[uniqueId];
+        unit.partialObsUpdate(unitObs);
+        SVGUnitSymbol.partialObsUpdate(uniqueId, unitObs);
+    } 
+    if (falseColorMode)
+        MapView.set_colors(colors);
+}
+
+function init() {
+    messages = replayData;
+    console.log("num messages = "+messages.length);
+    processScenarioJSON(messages[message_index]);
+    ++ message_index;
+}
+
+function false_color() {
+    MapView.set_colors(colors);
+    falseColorMode = true;
+}
+
+function terrain_color() {
+    MapView.terrain_color();
+    falseColorMode = false;
+}
+</script>
+
+<body onload="init();">
+
+<input id="step" type="button" value="Step" onclick="next_message();" />
+<input id="false_color" type="button" value="False Color" onclick="false_color();" />
+<input id="terrain_color" type="button" value="Terrain Color" onclick="terrain_color();" />
+
+</body>
+</html>

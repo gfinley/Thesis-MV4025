@@ -1,0 +1,232 @@
+<html>
+<meta charset="utf-8"/>
+<script src="map.js"></script>
+<script src="unit.js"></script>
+<script src="svg-unit-placement.js"></script>
+<script src="unit-placement-control.js"></script>
+<script src="svg-util.js"></script>
+<script src="svg-map-view.js"></script>
+<script src="svg-unit-symbol.js"></script>
+<script src="svg-gui.js"></script>
+<script src="svg-setup-marker.js"></script>
+<script src="style.js"></script>
+<script src="terrain.js"></script>
+<script src="human-player-control.js"></script>
+<script src="test-data.js"></script>
+<script src="mobility.js"></script>
+<script src="combat.js"></script>
+<script>
+
+var _on_move = false; // Referenced by human-player-control.js
+var _setup_phase = false;  // Referenced by human-player-control.js
+var websocket = null;
+var _faction = null; // Referenced by human-player-control.js
+var SS_phase = null; // Last known server phase count
+
+function isSetupPhase(msgO) {
+    return msgO.observation.status.setupMode;
+}
+
+function newPhase(msgO) {
+    SVGUnitSymbol.setAllUnitBrightness("normal");
+    if (isSetupPhase(msgO))
+        SVGSetupMarker.setAllVisible(true);
+    else   // move phase
+        SVGSetupMarker.setAllVisible(false);
+}
+
+// Message handlers
+
+function resetHandler(msgO) {
+}
+
+function observationHandler(msgO) {
+    if (msgO.type !== "observation")
+        alert(`Expecting message type observation, received ${msgO.type}`);
+    // New phase?
+    if (msgO.observation.phaseCount !== SS_phase) {
+        SS_phase = msgO.observation.phaseCount;
+        newPhase(msgO);
+    }
+
+    _setup_phase = isSetupPhase(msgO);
+
+    // Text field updates
+    let span = document.getElementById("onmove");
+    if (msgO.observation.status.isTerminal)
+        span.textContent = "terminal";
+    else
+        span.textContent = msgO.observation.status.onMove;
+    span = document.getElementById("phase");
+    if (msgO.observation.status.setupMode)
+        span.textContent = "setup";
+    else
+        span.textContent = msgO.observation.status.phaseCount;
+    SVGUnitSymbol.setAllUnitBrightness("normal");
+    span = document.getElementById("score");
+    span.textContent = msgO.observation.status.score; 
+
+    SVGSetupMarker.setAllVisible(isSetupPhase(msgO));
+
+    for (let unitObs of msgO.observation.units) {
+        let uniqueId = unitObs.faction+" "+unitObs.longName
+        let unit = Unit.unitIndex[uniqueId];
+        unit.partialObsUpdate(unitObs); // FIX Rename function to obsUpdate
+        SVGUnitSymbol.partialObsUpdate(uniqueId, unitObs); // FIX as above
+    }  
+    SVGGui.clearMarks(); // What marks does this clear?
+  
+
+    _on_move = msgO.observation.status.onMove === _faction;  // Defined at top
+}
+
+function messageHandler(message) {
+    let msgO = JSON.parse(message);
+    if (msgO.type == "parameters")
+        parametersHandler(msgO);
+    else if (msgO.type == "observation")
+        observationHandler(msgO);
+    else if (msgO.type == "reset")
+        resetHandler(msgO);
+    else
+        throw 'Unknown message type: '+msgO.type;
+}
+
+function parametersHandler(msgO) {
+
+    Map.fromPortable(msgO.parameters.map);
+
+    var width = 5;  // Hardcoded width for now
+    var x_hex_margin = 6;
+    var y_hex_margin = 1;
+    var palette_width = 4;
+    var x_palette_margin = 0.5;
+    var y_palette_margin = 0.5;
+    var param = {
+        width:width,
+        x_hex_margin:x_hex_margin,
+        y_hex_margin:y_hex_margin,
+        palette_width:palette_width,
+        x_palette_margin:x_palette_margin,
+        y_palette_margin:y_palette_margin
+    };
+    SVG.createView(param);
+
+    Unit.init();
+    Unit.fromPortable2(msgO.parameters.units);
+
+    //messageHandler = observationHandler;
+
+    // Text field updates
+    let span = document.getElementById("onmove");
+    span.textContent = "None";
+    span = document.getElementById("phase");
+    span.textContent = "None";
+    SVGUnitSymbol.setAllUnitBrightness("normal");
+    span = document.getElementById("score");
+    span.textContent = "None"; 
+
+    let btn = document.getElementById("blue");
+    btn.style.backgroundColor = "lightgray";
+    btn = document.getElementById("red");
+    btn.style.backgroundColor = "lightgray";
+}
+
+function redPressed(btn) {
+    websocket.send('{ "type" : "role-request", "role" : "red" }');
+    btn.style.backgroundColor = "red";
+    _faction = "red";
+}
+
+// Functions to send data back to server
+
+function sendMove(hex) {
+    let msg = {type:"action", action:{type:"move", mover:selectedUnit.uniqueId, destination:hex.id}};
+    websocket.send(JSON.stringify(msg));
+}
+
+function sendFire(targetUnit) {
+    let msg = {type:"action", action:{type:"fire", source:selectedUnit.uniqueId, target:targetUnit.uniqueId}};
+    websocket.send(JSON.stringify(msg));
+}
+
+function sendReset() {
+    let msg = {type:"reset-request"};
+    websocket.send(JSON.stringify(msg));
+}
+
+function sendNextGame() {
+    let msg = {type:"next-game-request"};
+    websocket.send(JSON.stringify(msg));
+}
+
+function sendSetupMove(hex) {
+    let msg = {type:"action", action:{type:"setup-move", mover:selectedUnit.uniqueId, destination:hex.id}};
+    websocket.send(JSON.stringify(msg));
+}
+
+function sendSetupExchange(friendlyUnit) {
+    let msg = {type:"action", action:{type:"setup-exchange", mover:selectedUnit.uniqueId, friendly:friendlyUnit.uniqueId}};
+    websocket.send(JSON.stringify(msg));
+    //messageHandler = observationHandler;
+}
+
+function bluePressed(btn) {
+    websocket.send('{ "type" : "role-request", "role" : "blue" }');
+    btn.style.backgroundColor = "blue";
+    _faction = "blue";
+}
+
+function redPressed(btn) {
+    websocket.send('{ "type" : "role-request", "role" : "red" }');
+    btn.style.backgroundColor = "red";
+    _faction = "red";
+}
+
+function endMovePressed() {
+    resetGuiState();
+    msg = { type:"action", action:{type:"pass"} };
+    websocket.send(JSON.stringify(msg));
+}
+
+function init() {
+    var SERVER_WEBSOCKET_URL = "ws://localhost:9999";
+    websocket = new WebSocket(SERVER_WEBSOCKET_URL); // Defined above
+    websocket.onopen = function(evt){
+        let span = document.getElementById("status");
+        span.textContent = "Connected";
+        console.log("Opened websocket");
+    };
+    websocket.onclose = function(evt){
+        let span = document.getElementById("status");
+        span.textContent = "Socket closed";
+        console.log("Websocket closed");
+    };
+    websocket.onerror = function(evt){console.log("Websocket error");};
+
+    websocket.onmessage = function(evt) {
+        console.log("Message from network:",evt.data);
+        messageHandler(evt.data);
+    };
+}
+</script>
+
+<body onload="init()">
+
+Status: <span id="status">Not connected</span>
+&nbsp;
+Role request:
+<input id="blue" type="button" value="Blue" onclick="bluePressed(this);" />
+<input id="red" type="button" value="Red" onclick="redPressed(this);" />
+&nbsp;
+OnMove: <span id="onmove">None</span>
+&nbsp;
+Phase: <span id="phase">None</span>
+<input id="end-move" type="button" value="End Phase" onclick="endMovePressed();" />
+&nbsp;
+Score: <span id="score">None</span>
+<input id="reset" type="button" value="Reset" onclick="sendReset();" />
+<input id="next-game" type="button" value="Next Game" onclick="sendNextGame();"/>
+
+</body>
+</html>

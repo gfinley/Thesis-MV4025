@@ -1,0 +1,5 @@
+Unix-based framework for running experimental designs described in JSON. Works fine in WSL (Windows Subsystem for Linux). A block design generator (replication_generator.py) is provided.
+
+To use, copy test_run_one_exp.py and then modify the application dependent part of the file. You must create an "experiment function" that takes parameters from your experimental design points and produces the measures of effectiveness (MOEs) that you are interested in. You must also copy run_one_exp.py or create your own similar file and customize it to call your function. The number of processes created can be set in run_all.sh. The results are written to results.csv for easy import into Excel or similar. The processes are started by, e.g., "bash run_all.sh run_one_exp.py"
+
+To run the test, execute "bash test_run_me.sh" on the command line. Use "top" to monitor the progress of the Python processes that are spawned. When they complete, execute "bash test_check_results.sh" to see if the test was passed.

@@ -1,0 +1,694 @@
+2022-09-21 18:53:52,163	INFO worker.py:1518 -- Started a local Ray instance.
+2022-09-21 18:53:56,068	WARNING ppo.py:350 -- `train_batch_size` (4000) cannot be achieved with your other settings (num_workers=12 num_envs_per_worker=1 rollout_fragment_length=200)! Auto-adjusting `rollout_fragment_length` to 334.
+2022-09-21 18:53:56,068	INFO ppo.py:378 -- In multi-agent mode, policies will be optimized sequentially by the multi-GPU optimizer. Consider setting simple_optimizer=True if this doesn't work for you.
+2022-09-21 18:53:56,069	INFO algorithm.py:351 -- Current log_level is WARN. For more information, set 'log_level': 'INFO' / 'DEBUG' or use the -v and -vv flags.
+2022-09-21 18:54:00,639	WARNING util.py:65 -- Install gputil for GPU system monitoring.
+/home/matthew.finley/miniconda3/envs/sbl3/lib/python3.8/site-packages/torch/jit/_trace.py:967: TracerWarning: Encountering a list at the output of the tracer might cause the trace to be incorrect, this is only valid if the container structure does not change based on the module's inputs. Consider using a constant container instead (e.g. for `list`, use a `tuple` instead. for `dict`, use a `NamedTuple` instead). If you absolutely need this and know the side effects, pass strict=False to trace() to allow this behavior.
+  module._c._create_method_from_trace(
+agent_timesteps_total: 4008
+counters:
+  num_agent_steps_sampled: 4008
+  num_agent_steps_trained: 4008
+  num_env_steps_sampled: 4008
+  num_env_steps_trained: 4008
+custom_metrics: {}
+date: 2022-09-21_18-54-14
+done: false
+episode_len_mean: 15.057471264367816
+episode_media: {}
+episode_reward_max: 415.0
+episode_reward_mean: 86.88505747126437
+episode_reward_min: 25.0
+episodes_this_iter: 261
+episodes_total: 261
+experiment_id: b8cb751eaa95448b93ccd9daf480fb6e
+hostname: compute-2-39.hamming.cluster
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 0.20000000000000004
+        cur_lr: 5.0000000000000016e-05
+        entropy: 1.936222073852375
+        entropy_coeff: 0.0
+        grad_gnorm: 0.4637945165557246
+        kl: 0.00967027503667199
+        policy_loss: -0.018412230147789883
+        total_loss: 9.872634875389837
+        vf_explained_var: -7.0775067934425925e-06
+        vf_loss: 9.889113000644151
+      model: {}
+      num_agent_steps_trained: 128.0
+  num_agent_steps_sampled: 4008
+  num_agent_steps_trained: 4008
+  num_env_steps_sampled: 4008
+  num_env_steps_trained: 4008
+iterations_since_restore: 1
+node_ip: 10.1.2.39
+num_agent_steps_sampled: 4008
+num_agent_steps_trained: 4008
+num_env_steps_sampled: 4008
+num_env_steps_sampled_this_iter: 4008
+num_env_steps_trained: 4008
+num_env_steps_trained_this_iter: 4008
+num_faulty_episodes: 0
+num_healthy_workers: 12
+num_recreated_workers: 0
+num_steps_trained_this_iter: 4008
+perf:
+  cpu_util_percent: 1.9549999999999996
+  ram_util_percent: 6.880000000000001
+pid: 112169
+policy_reward_max: {}
+policy_reward_mean: {}
+policy_reward_min: {}
+sampler_perf:
+  mean_action_processing_ms: 0.05869492935317658
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.803478947428574
+  mean_inference_ms: 1.1431063837843372
+  mean_raw_obs_processing_ms: 0.896181533694806
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 15.057471264367816
+  episode_media: {}
+  episode_reward_max: 415.0
+  episode_reward_mean: 86.88505747126437
+  episode_reward_min: 25.0
+  episodes_this_iter: 261
+  hist_stats:
+    episode_lengths: [10, 15, 15, 10, 20, 15, 10, 20, 20, 20, 10, 20, 20, 10, 15,
+      20, 10, 10, 10, 10, 15, 10, 10, 10, 15, 10, 20, 15, 20, 10, 20, 20, 10, 15,
+      15, 15, 10, 20, 10, 10, 15, 20, 20, 10, 15, 20, 20, 20, 10, 20, 20, 15, 20,
+      20, 15, 20, 10, 10, 10, 15, 10, 20, 15, 10, 15, 15, 20, 20, 15, 20, 15, 15,
+      15, 20, 15, 10, 20, 15, 20, 10, 20, 10, 15, 10, 10, 20, 15, 10, 10, 15, 15,
+      15, 20, 20, 20, 10, 20, 15, 15, 20, 20, 20, 10, 10, 10, 10, 10, 15, 20, 20,
+      10, 15, 15, 10, 15, 15, 15, 20, 10, 20, 15, 10, 15, 15, 15, 15, 15, 10, 15,
+      20, 20, 15, 20, 10, 10, 10, 10, 20, 20, 10, 15, 10, 20, 15, 20, 10, 15, 20,
+      10, 15, 20, 15, 10, 15, 20, 15, 20, 10, 10, 10, 20, 20, 20, 10, 20, 20, 10,
+      10, 10, 10, 10, 10, 20, 15, 10, 15, 20, 10, 20, 20, 15, 20, 10, 10, 20, 15,
+      15, 15, 20, 15, 10, 15, 15, 20, 20, 15, 10, 20, 20, 20, 20, 10, 20, 20, 15,
+      15, 20, 10, 15, 15, 20, 10, 10, 15, 20, 10, 20, 10, 10, 20, 20, 20, 15, 20,
+      20, 20, 20, 15, 10, 15, 15, 15, 20, 15, 20, 10, 20, 20, 10, 15, 20, 10, 10,
+      10, 10, 20, 10, 15, 10, 15, 15, 10, 10, 20, 10, 10, 15, 15, 10, 20, 15]
+    episode_reward: [25.0, 265.0, 25.0, 265.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 25.0, 169.0, 25.0, 75.0, 25.0, 219.0, 25.0, 265.0, 25.0, 25.0, 25.0,
+      25.0, 73.0, 25.0, 25.0, 25.0, 75.0, 265.0, 25.0, 121.0, 25.0, 25.0, 25.0, 25.0,
+      169.0, 25.0, 265.0, 25.0, 73.0, 25.0, 25.0, 75.0, 265.0, 75.0, 25.0, 25.0, 25.0,
+      25.0, 73.0, 25.0, 75.0, 25.0, 25.0, 25.0, 25.0, 315.0, 125.0, 75.0, 125.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 125.0, 25.0, 25.0, 25.0,
+      169.0, 121.0, 217.0, 217.0, 25.0, 25.0, 25.0, 25.0, 25.0, 125.0, 75.0, 169.0,
+      25.0, 25.0, 217.0, 25.0, 121.0, 25.0, 25.0, 25.0, 25.0, 73.0, 75.0, 25.0, 125.0,
+      25.0, 125.0, 265.0, 265.0, 267.0, 169.0, 169.0, 365.0, 175.0, 25.0, 25.0, 25.0,
+      265.0, 121.0, 75.0, 25.0, 25.0, 25.0, 75.0, 25.0, 25.0, 217.0, 73.0, 265.0,
+      25.0, 265.0, 25.0, 25.0, 121.0, 25.0, 25.0, 25.0, 25.0, 265.0, 25.0, 73.0, 25.0,
+      25.0, 265.0, 25.0, 25.0, 25.0, 75.0, 25.0, 75.0, 217.0, 121.0, 25.0, 73.0, 75.0,
+      25.0, 265.0, 169.0, 25.0, 317.0, 75.0, 25.0, 265.0, 25.0, 25.0, 75.0, 25.0,
+      25.0, 25.0, 75.0, 75.0, 25.0, 25.0, 217.0, 121.0, 25.0, 75.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 121.0, 415.0, 25.0, 265.0, 75.0, 121.0, 169.0, 169.0, 265.0, 25.0,
+      217.0, 25.0, 25.0, 73.0, 121.0, 121.0, 25.0, 75.0, 50.0, 25.0, 265.0, 217.0,
+      169.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 217.0,
+      25.0, 50.0, 269.0, 25.0, 75.0, 25.0, 25.0, 73.0, 25.0, 217.0, 25.0, 125.0, 315.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 219.0, 25.0, 75.0, 169.0, 25.0, 217.0, 125.0,
+      25.0, 75.0, 25.0, 315.0, 25.0, 25.0, 315.0, 265.0, 25.0, 217.0, 265.0, 25.0,
+      25.0, 25.0, 25.0, 265.0, 75.0, 25.0, 265.0, 25.0, 25.0, 25.0, 25.0, 265.0]
+  num_faulty_episodes: 0
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.05869492935317658
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.803478947428574
+    mean_inference_ms: 1.1431063837843372
+    mean_raw_obs_processing_ms: 0.896181533694806
+time_since_restore: 13.371199607849121
+time_this_iter_s: 13.371199607849121
+time_total_s: 13.371199607849121
+timers:
+  learn_throughput: 327.618
+  learn_time_ms: 12233.774
+  load_throughput: 16677351.619
+  load_time_ms: 0.24
+  synch_weights_time_ms: 3.214
+  training_iteration_time_ms: 13363.676
+timestamp: 1663811654
+timesteps_since_restore: 0
+timesteps_total: 4008
+training_iteration: 1
+trial_id: default
+warmup_time: 4.572293281555176
+
+agent_timesteps_total: 8016
+counters:
+  num_agent_steps_sampled: 8016
+  num_agent_steps_trained: 8016
+  num_env_steps_sampled: 8016
+  num_env_steps_trained: 8016
+custom_metrics: {}
+date: 2022-09-21_18-54-27
+done: false
+episode_len_mean: 15.095419847328245
+episode_media: {}
+episode_reward_max: 365.0
+episode_reward_mean: 86.97328244274809
+episode_reward_min: 25.0
+episodes_this_iter: 262
+episodes_total: 523
+experiment_id: b8cb751eaa95448b93ccd9daf480fb6e
+hostname: compute-2-39.hamming.cluster
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 0.20000000000000004
+        cur_lr: 5.0000000000000016e-05
+        entropy: 1.9123663540809386
+        entropy_coeff: 0.0
+        grad_gnorm: 0.41506032144190164
+        kl: 0.012990350792372398
+        policy_loss: -0.03285112812344025
+        total_loss: 9.720251129519555
+        vf_explained_var: 1.0245589799778435e-06
+        vf_loss: 9.750504139930971
+      model: {}
+      num_agent_steps_trained: 128.0
+  num_agent_steps_sampled: 8016
+  num_agent_steps_trained: 8016
+  num_env_steps_sampled: 8016
+  num_env_steps_trained: 8016
+iterations_since_restore: 2
+node_ip: 10.1.2.39
+num_agent_steps_sampled: 8016
+num_agent_steps_trained: 8016
+num_env_steps_sampled: 8016
+num_env_steps_sampled_this_iter: 4008
+num_env_steps_trained: 8016
+num_env_steps_trained_this_iter: 4008
+num_faulty_episodes: 0
+num_healthy_workers: 12
+num_recreated_workers: 0
+num_steps_trained_this_iter: 4008
+perf:
+  cpu_util_percent: 1.6055555555555556
+  ram_util_percent: 6.900000000000001
+pid: 112169
+policy_reward_max: {}
+policy_reward_mean: {}
+policy_reward_min: {}
+sampler_perf:
+  mean_action_processing_ms: 0.057215218014114735
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.7979619900072684
+  mean_inference_ms: 1.126597382476883
+  mean_raw_obs_processing_ms: 0.89989363692189
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 15.095419847328245
+  episode_media: {}
+  episode_reward_max: 365.0
+  episode_reward_mean: 86.97328244274809
+  episode_reward_min: 25.0
+  episodes_this_iter: 262
+  hist_stats:
+    episode_lengths: [20, 10, 10, 20, 10, 15, 20, 20, 20, 15, 20, 15, 15, 10, 20,
+      20, 20, 10, 15, 20, 20, 20, 20, 15, 10, 15, 10, 15, 10, 10, 15, 10, 10, 20,
+      10, 15, 10, 15, 10, 15, 20, 20, 15, 10, 10, 10, 15, 20, 20, 10, 20, 20, 10,
+      20, 15, 20, 20, 15, 15, 15, 20, 10, 20, 15, 15, 20, 10, 10, 15, 10, 20, 10,
+      15, 15, 20, 20, 15, 15, 10, 15, 15, 15, 20, 15, 10, 15, 10, 15, 15, 20, 15,
+      15, 15, 15, 15, 20, 10, 10, 20, 15, 15, 15, 15, 15, 20, 20, 10, 15, 20, 15,
+      20, 20, 20, 15, 15, 15, 15, 20, 20, 10, 10, 10, 20, 20, 15, 15, 15, 15, 20,
+      15, 10, 10, 10, 20, 20, 10, 15, 15, 10, 10, 20, 15, 10, 10, 15, 15, 10, 10,
+      10, 15, 15, 10, 10, 15, 10, 15, 10, 20, 15, 10, 15, 20, 10, 15, 10, 20, 10,
+      15, 10, 20, 10, 10, 20, 15, 20, 10, 10, 10, 10, 20, 20, 20, 10, 15, 20, 15,
+      20, 20, 10, 10, 15, 15, 10, 10, 15, 20, 20, 15, 15, 20, 15, 10, 10, 10, 20,
+      10, 10, 20, 15, 15, 20, 15, 10, 20, 15, 20, 15, 15, 20, 20, 15, 20, 20, 20,
+      20, 20, 15, 20, 20, 15, 10, 15, 20, 15, 15, 15, 15, 20, 10, 10, 10, 20, 10,
+      10, 20, 20, 20, 10, 15, 10, 20, 15, 15, 10, 20, 10, 10, 20, 20, 20, 10, 15]
+    episode_reward: [25.0, 25.0, 217.0, 75.0, 169.0, 75.0, 25.0, 75.0, 267.0, 25.0,
+      75.0, 265.0, 25.0, 73.0, 173.0, 75.0, 50.0, 25.0, 25.0, 171.0, 75.0, 25.0, 25.0,
+      75.0, 25.0, 219.0, 25.0, 25.0, 25.0, 75.0, 75.0, 265.0, 25.0, 25.0, 25.0, 75.0,
+      75.0, 265.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 73.0, 75.0, 25.0, 75.0,
+      25.0, 75.0, 169.0, 73.0, 219.0, 25.0, 365.0, 121.0, 25.0, 73.0, 25.0, 25.0,
+      25.0, 75.0, 265.0, 25.0, 315.0, 169.0, 25.0, 315.0, 25.0, 25.0, 265.0, 125.0,
+      75.0, 265.0, 25.0, 25.0, 73.0, 217.0, 75.0, 75.0, 265.0, 25.0, 217.0, 25.0,
+      265.0, 25.0, 265.0, 25.0, 75.0, 121.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 265.0, 25.0, 73.0, 217.0, 25.0, 25.0, 25.0, 265.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 265.0, 75.0, 169.0, 25.0, 25.0, 269.0, 169.0, 169.0, 265.0, 25.0,
+      25.0, 265.0, 25.0, 265.0, 121.0, 75.0, 265.0, 125.0, 25.0, 25.0, 25.0, 125.0,
+      25.0, 25.0, 25.0, 25.0, 169.0, 25.0, 75.0, 217.0, 25.0, 75.0, 25.0, 25.0, 217.0,
+      125.0, 25.0, 25.0, 121.0, 25.0, 265.0, 125.0, 25.0, 123.0, 25.0, 217.0, 25.0,
+      25.0, 265.0, 121.0, 125.0, 25.0, 75.0, 265.0, 265.0, 25.0, 25.0, 265.0, 121.0,
+      25.0, 25.0, 75.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0, 75.0, 25.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 265.0, 25.0, 73.0, 25.0, 25.0, 25.0, 25.0, 25.0, 265.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 125.0, 25.0, 25.0, 25.0, 25.0, 217.0,
+      25.0, 315.0, 25.0, 25.0, 25.0, 73.0, 75.0, 217.0, 75.0, 25.0, 25.0, 121.0, 25.0,
+      75.0, 217.0, 25.0, 25.0, 25.0, 265.0, 75.0, 25.0, 75.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 217.0, 25.0, 169.0, 169.0, 217.0, 25.0, 25.0, 25.0, 25.0, 217.0, 75.0,
+      25.0, 25.0, 125.0, 25.0, 169.0, 125.0, 25.0, 121.0, 25.0, 171.0, 217.0, 25.0,
+      25.0]
+  num_faulty_episodes: 0
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.057215218014114735
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.7979619900072684
+    mean_inference_ms: 1.126597382476883
+    mean_raw_obs_processing_ms: 0.89989363692189
+time_since_restore: 26.58405303955078
+time_this_iter_s: 13.21285343170166
+time_total_s: 26.58405303955078
+timers:
+  learn_throughput: 330.828
+  learn_time_ms: 12115.04
+  load_throughput: 8812985.81
+  load_time_ms: 0.455
+  synch_weights_time_ms: 3.084
+  training_iteration_time_ms: 13284.6
+timestamp: 1663811667
+timesteps_since_restore: 0
+timesteps_total: 8016
+training_iteration: 2
+trial_id: default
+warmup_time: 4.572293281555176
+
+agent_timesteps_total: 12024
+counters:
+  num_agent_steps_sampled: 12024
+  num_agent_steps_trained: 12024
+  num_env_steps_sampled: 12024
+  num_env_steps_trained: 12024
+custom_metrics: {}
+date: 2022-09-21_18-54-40
+done: false
+episode_len_mean: 14.568345323741006
+episode_media: {}
+episode_reward_max: 365.0
+episode_reward_mean: 81.51438848920863
+episode_reward_min: 25.0
+episodes_this_iter: 278
+episodes_total: 801
+experiment_id: b8cb751eaa95448b93ccd9daf480fb6e
+hostname: compute-2-39.hamming.cluster
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 0.20000000000000004
+        cur_lr: 5.0000000000000016e-05
+        entropy: 1.873410370785703
+        entropy_coeff: 0.0
+        grad_gnorm: 0.4992621880064728
+        kl: 0.013881084171076464
+        policy_loss: -0.0321347608861904
+        total_loss: 9.86227456574799
+        vf_explained_var: -4.469707447995422e-07
+        vf_loss: 9.89163308297434
+      model: {}
+      num_agent_steps_trained: 128.0
+  num_agent_steps_sampled: 12024
+  num_agent_steps_trained: 12024
+  num_env_steps_sampled: 12024
+  num_env_steps_trained: 12024
+iterations_since_restore: 3
+node_ip: 10.1.2.39
+num_agent_steps_sampled: 12024
+num_agent_steps_trained: 12024
+num_env_steps_sampled: 12024
+num_env_steps_sampled_this_iter: 4008
+num_env_steps_trained: 12024
+num_env_steps_trained_this_iter: 4008
+num_faulty_episodes: 0
+num_healthy_workers: 12
+num_recreated_workers: 0
+num_steps_trained_this_iter: 4008
+perf:
+  cpu_util_percent: 1.5699999999999998
+  ram_util_percent: 6.900000000000001
+pid: 112169
+policy_reward_max: {}
+policy_reward_mean: {}
+policy_reward_min: {}
+sampler_perf:
+  mean_action_processing_ms: 0.056866543767230215
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.7979262419566502
+  mean_inference_ms: 1.1240530192915725
+  mean_raw_obs_processing_ms: 0.9183790876356168
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 14.568345323741006
+  episode_media: {}
+  episode_reward_max: 365.0
+  episode_reward_mean: 81.51438848920863
+  episode_reward_min: 25.0
+  episodes_this_iter: 278
+  hist_stats:
+    episode_lengths: [20, 15, 10, 20, 20, 20, 10, 10, 20, 15, 15, 10, 15, 20, 20,
+      10, 15, 15, 20, 15, 15, 15, 15, 15, 20, 10, 20, 20, 10, 10, 15, 15, 20, 20,
+      10, 10, 10, 15, 10, 20, 10, 20, 10, 15, 15, 15, 10, 20, 10, 15, 10, 10, 10,
+      15, 10, 20, 10, 20, 15, 20, 10, 10, 15, 20, 20, 15, 15, 10, 20, 10, 15, 20,
+      15, 10, 10, 10, 15, 15, 20, 20, 10, 15, 10, 15, 10, 10, 15, 20, 15, 10, 15,
+      15, 20, 10, 15, 20, 20, 15, 10, 15, 10, 10, 20, 15, 10, 20, 20, 15, 15, 15,
+      15, 15, 20, 10, 15, 10, 15, 15, 20, 20, 20, 20, 15, 10, 20, 10, 15, 10, 15,
+      20, 15, 15, 10, 20, 20, 15, 10, 10, 15, 20, 15, 10, 10, 20, 20, 10, 10, 10,
+      15, 10, 20, 15, 15, 10, 10, 10, 20, 10, 15, 10, 15, 20, 20, 20, 10, 15, 15,
+      10, 20, 10, 15, 20, 10, 10, 10, 15, 10, 15, 15, 15, 10, 10, 20, 15, 15, 15,
+      10, 10, 20, 10, 15, 20, 10, 10, 15, 20, 15, 15, 20, 15, 10, 10, 15, 20, 20,
+      10, 15, 20, 20, 15, 15, 15, 15, 20, 20, 20, 10, 10, 10, 10, 15, 10, 10, 10,
+      20, 20, 15, 10, 15, 15, 10, 15, 15, 20, 10, 20, 10, 10, 10, 20, 20, 10, 15,
+      10, 10, 20, 20, 20, 10, 10, 15, 10, 15, 15, 10, 15, 20, 10, 10, 15, 10, 15,
+      20, 20, 10, 20, 15, 10, 15, 20, 10, 10, 20, 10, 15, 20, 15, 10]
+    episode_reward: [25.0, 315.0, 125.0, 25.0, 25.0, 25.0, 25.0, 265.0, 25.0, 125.0,
+      25.0, 315.0, 73.0, 25.0, 25.0, 265.0, 73.0, 25.0, 25.0, 75.0, 267.0, 25.0, 265.0,
+      25.0, 267.0, 169.0, 25.0, 121.0, 25.0, 25.0, 75.0, 75.0, 317.0, 25.0, 217.0,
+      217.0, 25.0, 25.0, 265.0, 25.0, 121.0, 25.0, 25.0, 25.0, 265.0, 217.0, 123.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 219.0, 25.0, 25.0, 25.0, 125.0, 25.0, 75.0,
+      25.0, 265.0, 73.0, 25.0, 25.0, 73.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      217.0, 75.0, 25.0, 75.0, 25.0, 75.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0,
+      125.0, 25.0, 265.0, 25.0, 25.0, 25.0, 73.0, 73.0, 25.0, 25.0, 121.0, 75.0, 121.0,
+      317.0, 25.0, 73.0, 75.0, 75.0, 25.0, 125.0, 25.0, 25.0, 75.0, 25.0, 25.0, 365.0,
+      25.0, 25.0, 25.0, 125.0, 25.0, 25.0, 25.0, 75.0, 25.0, 25.0, 25.0, 265.0, 25.0,
+      265.0, 25.0, 25.0, 217.0, 25.0, 25.0, 25.0, 73.0, 50.0, 25.0, 25.0, 25.0, 25.0,
+      315.0, 121.0, 73.0, 265.0, 169.0, 25.0, 25.0, 73.0, 25.0, 121.0, 315.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 125.0, 267.0, 265.0, 25.0, 25.0, 315.0,
+      171.0, 73.0, 25.0, 217.0, 25.0, 25.0, 75.0, 265.0, 25.0, 25.0, 217.0, 25.0,
+      25.0, 73.0, 25.0, 25.0, 25.0, 217.0, 25.0, 25.0, 219.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 267.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 217.0, 25.0, 75.0, 73.0, 25.0, 25.0, 25.0, 25.0, 265.0, 25.0, 73.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 125.0, 25.0, 25.0, 25.0, 25.0, 169.0,
+      25.0, 25.0, 171.0, 25.0, 25.0, 25.0, 25.0, 171.0, 25.0, 25.0, 25.0, 265.0, 265.0,
+      265.0, 25.0, 169.0, 25.0, 121.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0,
+      25.0, 25.0, 125.0, 315.0, 75.0, 25.0, 25.0, 75.0, 25.0, 125.0, 25.0, 125.0,
+      265.0, 315.0, 25.0, 25.0, 169.0, 25.0, 25.0, 265.0, 121.0, 217.0, 25.0, 125.0,
+      315.0, 25.0]
+  num_faulty_episodes: 0
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.056866543767230215
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.7979262419566502
+    mean_inference_ms: 1.1240530192915725
+    mean_raw_obs_processing_ms: 0.9183790876356168
+time_since_restore: 40.01859712600708
+time_this_iter_s: 13.434544086456299
+time_total_s: 40.01859712600708
+timers:
+  learn_throughput: 329.856
+  learn_time_ms: 12150.76
+  load_throughput: 7129249.547
+  load_time_ms: 0.562
+  synch_weights_time_ms: 2.925
+  training_iteration_time_ms: 13332.406
+timestamp: 1663811680
+timesteps_since_restore: 0
+timesteps_total: 12024
+training_iteration: 3
+trial_id: default
+warmup_time: 4.572293281555176
+
+agent_timesteps_total: 16032
+counters:
+  num_agent_steps_sampled: 16032
+  num_agent_steps_trained: 16032
+  num_env_steps_sampled: 16032
+  num_env_steps_trained: 16032
+custom_metrics: {}
+date: 2022-09-21_18-54-54
+done: false
+episode_len_mean: 15.342205323193916
+episode_media: {}
+episode_reward_max: 367.0
+episode_reward_mean: 79.4638783269962
+episode_reward_min: 25.0
+episodes_this_iter: 263
+episodes_total: 1064
+experiment_id: b8cb751eaa95448b93ccd9daf480fb6e
+hostname: compute-2-39.hamming.cluster
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 0.20000000000000004
+        cur_lr: 5.0000000000000016e-05
+        entropy: 1.8248316329012635
+        entropy_coeff: 0.0
+        grad_gnorm: 0.530221831702417
+        kl: 0.015413478935244477
+        policy_loss: -0.05052209149605484
+        total_loss: 9.849234032374556
+        vf_explained_var: 3.447455744589529e-07
+        vf_loss: 9.89667341580955
+      model: {}
+      num_agent_steps_trained: 128.0
+  num_agent_steps_sampled: 16032
+  num_agent_steps_trained: 16032
+  num_env_steps_sampled: 16032
+  num_env_steps_trained: 16032
+iterations_since_restore: 4
+node_ip: 10.1.2.39
+num_agent_steps_sampled: 16032
+num_agent_steps_trained: 16032
+num_env_steps_sampled: 16032
+num_env_steps_sampled_this_iter: 4008
+num_env_steps_trained: 16032
+num_env_steps_trained_this_iter: 4008
+num_faulty_episodes: 0
+num_healthy_workers: 12
+num_recreated_workers: 0
+num_steps_trained_this_iter: 4008
+perf:
+  cpu_util_percent: 1.557894736842105
+  ram_util_percent: 6.900000000000001
+pid: 112169
+policy_reward_max: {}
+policy_reward_mean: {}
+policy_reward_min: {}
+sampler_perf:
+  mean_action_processing_ms: 0.05584418363269658
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.7900116759470117
+  mean_inference_ms: 1.112804168992825
+  mean_raw_obs_processing_ms: 0.9105944419156615
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 15.342205323193916
+  episode_media: {}
+  episode_reward_max: 367.0
+  episode_reward_mean: 79.4638783269962
+  episode_reward_min: 25.0
+  episodes_this_iter: 263
+  hist_stats:
+    episode_lengths: [20, 20, 10, 20, 20, 10, 20, 20, 15, 20, 10, 20, 20, 15, 10,
+      20, 20, 15, 20, 15, 20, 10, 10, 10, 15, 20, 15, 15, 20, 20, 10, 20, 20, 15,
+      20, 10, 20, 10, 20, 10, 15, 10, 20, 20, 10, 20, 20, 20, 15, 10, 20, 10, 20,
+      20, 10, 20, 20, 10, 10, 10, 15, 15, 10, 15, 15, 10, 15, 10, 10, 10, 15, 10,
+      10, 20, 20, 15, 20, 15, 20, 15, 15, 15, 15, 10, 15, 20, 20, 15, 20, 10, 10,
+      20, 15, 10, 10, 20, 10, 20, 20, 20, 20, 20, 10, 15, 10, 15, 15, 15, 20, 15,
+      20, 20, 20, 15, 10, 10, 15, 15, 10, 15, 15, 20, 15, 10, 20, 20, 15, 10, 15,
+      10, 20, 10, 20, 15, 20, 10, 20, 15, 15, 10, 20, 15, 20, 20, 15, 20, 20, 20,
+      10, 20, 15, 15, 10, 10, 15, 20, 20, 20, 10, 10, 15, 10, 10, 20, 20, 20, 15,
+      10, 15, 20, 10, 15, 20, 20, 20, 20, 10, 20, 20, 20, 10, 15, 20, 20, 15, 15,
+      15, 20, 10, 20, 20, 10, 20, 10, 10, 10, 10, 15, 15, 20, 15, 15, 15, 10, 20,
+      15, 15, 20, 10, 10, 10, 10, 15, 20, 10, 20, 15, 15, 15, 15, 10, 20, 15, 10,
+      10, 10, 10, 15, 20, 15, 20, 15, 10, 15, 10, 15, 20, 10, 20, 20, 20, 15, 20,
+      10, 10, 20, 10, 15, 10, 15, 10, 20, 10, 15, 20, 15, 20, 15, 10, 10, 10, 15,
+      20]
+    episode_reward: [365.0, 25.0, 265.0, 25.0, 75.0, 25.0, 25.0, 75.0, 265.0, 25.0,
+      121.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 121.0, 25.0, 25.0, 265.0,
+      73.0, 25.0, 25.0, 265.0, 125.0, 25.0, 365.0, 217.0, 25.0, 121.0, 121.0, 169.0,
+      123.0, 75.0, 25.0, 25.0, 75.0, 75.0, 75.0, 25.0, 125.0, 25.0, 265.0, 25.0, 219.0,
+      365.0, 25.0, 125.0, 25.0, 25.0, 175.0, 25.0, 73.0, 25.0, 217.0, 75.0, 121.0,
+      25.0, 175.0, 25.0, 75.0, 25.0, 25.0, 25.0, 25.0, 25.0, 265.0, 75.0, 25.0, 175.0,
+      265.0, 75.0, 25.0, 25.0, 169.0, 25.0, 25.0, 25.0, 75.0, 265.0, 25.0, 25.0, 25.0,
+      25.0, 315.0, 73.0, 169.0, 169.0, 75.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      73.0, 219.0, 25.0, 25.0, 25.0, 75.0, 75.0, 25.0, 25.0, 75.0, 25.0, 25.0, 75.0,
+      75.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 171.0, 25.0, 265.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 169.0, 367.0, 25.0, 25.0, 25.0, 169.0, 75.0, 75.0, 125.0,
+      265.0, 265.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0, 25.0, 265.0, 125.0,
+      25.0, 73.0, 365.0, 25.0, 125.0, 25.0, 121.0, 25.0, 25.0, 25.0, 25.0, 173.0,
+      25.0, 73.0, 25.0, 125.0, 121.0, 169.0, 217.0, 25.0, 25.0, 121.0, 217.0, 75.0,
+      75.0, 25.0, 25.0, 25.0, 121.0, 125.0, 25.0, 25.0, 75.0, 25.0, 125.0, 217.0,
+      25.0, 25.0, 25.0, 25.0, 315.0, 25.0, 25.0, 25.0, 217.0, 25.0, 25.0, 25.0, 315.0,
+      25.0, 73.0, 25.0, 25.0, 25.0, 317.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 265.0, 25.0, 25.0, 75.0, 121.0, 25.0, 171.0, 25.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 169.0, 25.0, 169.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0,
+      75.0, 25.0, 125.0, 265.0, 25.0, 73.0, 25.0, 75.0, 75.0, 25.0, 265.0, 25.0, 25.0,
+      25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0, 25.0, 25.0, 217.0, 25.0, 25.0]
+  num_faulty_episodes: 0
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.05584418363269658
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.7900116759470117
+    mean_inference_ms: 1.112804168992825
+    mean_raw_obs_processing_ms: 0.9105944419156615
+time_since_restore: 53.38737964630127
+time_this_iter_s: 13.36878252029419
+time_total_s: 53.38737964630127
+timers:
+  learn_throughput: 329.099
+  learn_time_ms: 12178.711
+  load_throughput: 7306648.02
+  load_time_ms: 0.549
+  synch_weights_time_ms: 3.072
+  training_iteration_time_ms: 13340.153
+timestamp: 1663811694
+timesteps_since_restore: 0
+timesteps_total: 16032
+training_iteration: 4
+trial_id: default
+warmup_time: 4.572293281555176
+
+agent_timesteps_total: 20040
+counters:
+  num_agent_steps_sampled: 20040
+  num_agent_steps_trained: 20040
+  num_env_steps_sampled: 20040
+  num_env_steps_trained: 20040
+custom_metrics: {}
+date: 2022-09-21_18-55-07
+done: false
+episode_len_mean: 14.9438202247191
+episode_media: {}
+episode_reward_max: 415.0
+episode_reward_mean: 103.80898876404494
+episode_reward_min: 25.0
+episodes_this_iter: 267
+episodes_total: 1331
+experiment_id: b8cb751eaa95448b93ccd9daf480fb6e
+hostname: compute-2-39.hamming.cluster
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 0.20000000000000004
+        cur_lr: 5.0000000000000016e-05
+        entropy: 1.774322203410569
+        entropy_coeff: 0.0
+        grad_gnorm: 0.5734629777490452
+        kl: 0.014349266477051285
+        policy_loss: -0.04140649247934581
+        total_loss: 9.878298092913884
+        vf_explained_var: -4.34793451780914e-07
+        vf_loss: 9.91683469792848
+      model: {}
+      num_agent_steps_trained: 128.0
+  num_agent_steps_sampled: 20040
+  num_agent_steps_trained: 20040
+  num_env_steps_sampled: 20040
+  num_env_steps_trained: 20040
+iterations_since_restore: 5
+node_ip: 10.1.2.39
+num_agent_steps_sampled: 20040
+num_agent_steps_trained: 20040
+num_env_steps_sampled: 20040
+num_env_steps_sampled_this_iter: 4008
+num_env_steps_trained: 20040
+num_env_steps_trained_this_iter: 4008
+num_faulty_episodes: 0
+num_healthy_workers: 12
+num_recreated_workers: 0
+num_steps_trained_this_iter: 4008
+perf:
+  cpu_util_percent: 1.7421052631578948
+  ram_util_percent: 6.900000000000001
+pid: 112169
+policy_reward_max: {}
+policy_reward_mean: {}
+policy_reward_min: {}
+sampler_perf:
+  mean_action_processing_ms: 0.0542033161314351
+  mean_env_render_ms: 0.0
+  mean_env_wait_ms: 0.7748312304354168
+  mean_inference_ms: 1.0878314382649348
+  mean_raw_obs_processing_ms: 0.9893759506536436
+sampler_results:
+  custom_metrics: {}
+  episode_len_mean: 14.9438202247191
+  episode_media: {}
+  episode_reward_max: 415.0
+  episode_reward_mean: 103.80898876404494
+  episode_reward_min: 25.0
+  episodes_this_iter: 267
+  hist_stats:
+    episode_lengths: [10, 20, 10, 20, 10, 15, 20, 15, 10, 15, 10, 10, 20, 15, 20,
+      15, 10, 10, 10, 15, 10, 10, 10, 15, 10, 15, 15, 10, 20, 15, 15, 10, 20, 15,
+      10, 15, 20, 20, 20, 10, 20, 20, 20, 15, 10, 20, 15, 10, 20, 15, 10, 15, 20,
+      10, 20, 15, 10, 15, 10, 20, 15, 15, 15, 10, 15, 15, 15, 15, 10, 20, 15, 20,
+      20, 10, 15, 10, 20, 15, 15, 20, 20, 10, 10, 10, 10, 20, 10, 20, 15, 15, 15,
+      10, 10, 15, 10, 10, 10, 20, 15, 15, 15, 15, 15, 15, 10, 10, 15, 10, 15, 10,
+      10, 10, 20, 15, 10, 10, 15, 15, 10, 15, 20, 15, 10, 15, 10, 15, 15, 10, 15,
+      20, 15, 15, 20, 10, 15, 20, 15, 15, 15, 20, 10, 20, 15, 20, 10, 10, 20, 15,
+      20, 20, 10, 20, 20, 15, 15, 15, 15, 15, 15, 20, 10, 20, 15, 15, 15, 15, 20,
+      20, 20, 15, 15, 10, 10, 20, 15, 15, 20, 20, 15, 15, 20, 15, 15, 20, 20, 15,
+      15, 10, 20, 15, 20, 10, 10, 10, 20, 10, 20, 15, 10, 20, 15, 20, 15, 15, 15,
+      15, 20, 10, 20, 20, 20, 15, 10, 15, 20, 10, 15, 20, 10, 15, 20, 20, 10, 20,
+      20, 15, 10, 20, 15, 10, 10, 20, 15, 20, 20, 15, 20, 10, 10, 10, 15, 15, 20,
+      15, 15, 20, 15, 15, 15, 20, 10, 10, 15, 15, 10, 20, 15, 15, 10, 15, 10, 20,
+      10, 15, 15, 15, 15]
+    episode_reward: [75.0, 25.0, 25.0, 219.0, 25.0, 315.0, 121.0, 317.0, 169.0, 267.0,
+      121.0, 25.0, 25.0, 25.0, 25.0, 25.0, 75.0, 25.0, 73.0, 25.0, 75.0, 25.0, 121.0,
+      25.0, 265.0, 75.0, 365.0, 25.0, 217.0, 315.0, 25.0, 265.0, 25.0, 265.0, 25.0,
+      75.0, 317.0, 217.0, 75.0, 125.0, 25.0, 73.0, 267.0, 73.0, 75.0, 415.0, 25.0,
+      75.0, 217.0, 75.0, 25.0, 25.0, 123.0, 25.0, 25.0, 25.0, 25.0, 217.0, 25.0, 217.0,
+      75.0, 25.0, 75.0, 121.0, 265.0, 75.0, 125.0, 125.0, 25.0, 25.0, 25.0, 125.0,
+      73.0, 75.0, 169.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 265.0, 217.0, 73.0,
+      267.0, 267.0, 125.0, 25.0, 121.0, 121.0, 267.0, 75.0, 221.0, 25.0, 25.0, 73.0,
+      25.0, 221.0, 265.0, 217.0, 125.0, 267.0, 25.0, 25.0, 75.0, 25.0, 25.0, 217.0,
+      125.0, 73.0, 25.0, 171.0, 25.0, 25.0, 265.0, 173.0, 25.0, 217.0, 123.0, 315.0,
+      73.0, 315.0, 25.0, 25.0, 25.0, 265.0, 169.0, 25.0, 267.0, 217.0, 265.0, 171.0,
+      25.0, 25.0, 125.0, 25.0, 25.0, 265.0, 125.0, 171.0, 25.0, 25.0, 125.0, 121.0,
+      415.0, 25.0, 169.0, 125.0, 217.0, 25.0, 25.0, 125.0, 25.0, 25.0, 25.0, 123.0,
+      25.0, 25.0, 25.0, 25.0, 315.0, 25.0, 219.0, 25.0, 25.0, 25.0, 75.0, 73.0, 169.0,
+      25.0, 25.0, 125.0, 123.0, 25.0, 221.0, 25.0, 75.0, 25.0, 25.0, 125.0, 171.0,
+      121.0, 75.0, 25.0, 25.0, 75.0, 25.0, 221.0, 365.0, 25.0, 25.0, 25.0, 169.0,
+      125.0, 25.0, 25.0, 121.0, 25.0, 217.0, 75.0, 75.0, 25.0, 50.0, 25.0, 121.0,
+      25.0, 25.0, 75.0, 25.0, 169.0, 75.0, 73.0, 121.0, 121.0, 25.0, 25.0, 75.0, 75.0,
+      75.0, 25.0, 121.0, 125.0, 75.0, 75.0, 50.0, 121.0, 75.0, 75.0, 25.0, 73.0, 25.0,
+      25.0, 75.0, 75.0, 25.0, 315.0, 25.0, 25.0, 25.0, 25.0, 175.0, 25.0, 123.0, 25.0,
+      25.0, 25.0, 121.0, 217.0, 219.0, 75.0, 25.0, 25.0, 319.0, 125.0, 269.0, 25.0,
+      121.0, 25.0, 125.0, 75.0, 25.0, 217.0, 315.0, 121.0, 169.0, 73.0]
+  num_faulty_episodes: 0
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.0542033161314351
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.7748312304354168
+    mean_inference_ms: 1.0878314382649348
+    mean_raw_obs_processing_ms: 0.9893759506536436
+time_since_restore: 66.92676329612732
+time_this_iter_s: 13.53938364982605
+time_total_s: 66.92676329612732
+timers:
+  learn_throughput: 327.941
+  learn_time_ms: 12221.71
+  load_throughput: 7257909.693
+  load_time_ms: 0.552
+  synch_weights_time_ms: 3.01
+  training_iteration_time_ms: 13378.861
+timestamp: 1663811707
+timesteps_since_restore: 0
+timesteps_total: 20040
+training_iteration: 5
+trial_id: default
+warmup_time: 4.572293281555176
+

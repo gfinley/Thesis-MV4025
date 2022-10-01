@@ -1,0 +1,159 @@
+import matplotlib.pyplot as plt
+import os
+import numpy as np
+import argparse
+from scipy.signal import savgol_filter
+
+#this function will get all the files in the directory that match the pattern and return the file paths
+def get_files_in_dir(dir_path, pattern):
+    #get the files in the directory
+    files = os.listdir(dir_path)
+    #create a list to store the file paths
+    file_paths = []
+    #loop through the files
+    for file in files:
+        #check if the file matches the pattern
+        if pattern in file:
+            #add the file path to the list
+            file_paths.append(os.path.join(dir_path, file))
+    #return the file paths
+    return file_paths
+
+#given a file path, this function will array with the lines in the .npy file
+def get_eval_data(file_path):
+    #open the file
+    data = np.load(file_path)
+    return data
+
+#rea
+
+#make a function that returns one of 9 different colors
+def get_color(number):
+    #make a list of colors
+    if number == "3.5":
+        return "blue"
+
+    #print(number)
+    colors = ["red", "green", "blue", "yellow", "pink", "black", "orange", "purple", "maroon"]
+    #return the color
+    return colors[int(number)-1]
+
+
+#the main function
+def main():
+    flag = 0
+    #create the argument parser
+    parser = argparse.ArgumentParser()
+    #add the arguments
+    parser.add_argument("--mod_1", help="first mod to compare", default="0")
+    parser.add_argument("--mod_2", help="second mod to compare", default="0")
+    parser.add_argument("--mod_3", help="third mod to compare", default="0")
+    parser.add_argument("--ct", help="CHART TYPE", default="0")
+    parser.add_argument("--PPO", help="check for ppo?", default="0")
+
+    #parse the arguments
+    args = parser.parse_args()
+    print("args are {}".format(args))
+    if (args.mod_1 != "0" and args.mod_2 != "0") or args.mod_3 != "0":
+        print("setting flag")
+        flag = 1
+
+
+    print("starting evaluation")
+    #get the files in the directory
+    files = get_files_in_dir("log", "model")
+    #make a plt for the data
+
+    
+    if flag == 1:
+        temp = []
+        for file in files:
+            mod_num = file.split("_")[-2]
+            if mod_num == args.mod_1 or mod_num == args.mod_2 or mod_num == args.mod_3:
+                temp.append(file)
+        files = temp
+    #print(files)
+    plt.figure(figsize=(20,10))
+
+    for file in files:
+        #start a new line on the plot
+        #open each file
+        
+        print("file is {}".format(file))
+        if args.PPO != "0":
+            if "PPO" not in file:
+                continue
+            file_name_string = file.split("_")[1:5]
+            temp = file_name_string[2]
+            temp2 = file_name_string[3]
+            file_name_string_2 = " ".join(file_name_string)
+            eval_file = file +"/evaluations.npz"
+            data = get_eval_data(eval_file)
+        else:
+            file_name_string = file.split("_")[1:4]
+            temp = file_name_string[1]
+            temp2 = file_name_string[2]
+            file_name_string_2 = " ".join(file_name_string)
+            eval_file = file +"/evaluations.npz"
+            data = get_eval_data(eval_file)
+
+
+
+        counter = 0
+        x,y = [],[]
+        best = 0
+
+        if args.ct != "0":
+            for dad in data['results']:
+                time_step = data['timesteps'][counter]
+                avg = np.mean(dad)
+                #if avg > best:
+                #    best = avg
+                y.append(avg)
+                    #add line point to the plot
+                x.append(time_step)
+                counter +=1
+            #label the line
+            color = get_color(temp)
+            try:
+                plt.plot(x, savgol_filter(y,50,2), label=file_name_string_2, marker='o', color=color)
+            except Exception as e:
+                pass
+        else:
+            count = 0
+            for dad in data['results']:
+                time_step = data['timesteps'][counter]
+                avg = np.mean(dad)
+                if avg > best:
+                    best = avg
+                    y.append(avg)
+                    time_step = data['timesteps'][counter]
+                    #add line point to the plot
+                    x.append(time_step)
+                counter +=1
+            #label the line
+            color = get_color(temp)
+            print("{}, {}, {:.0f}".format(temp, temp2,best))
+            plt.plot(x,y, label=file_name_string_2, marker='o', color=color)
+
+            #plot the   data
+        
+    #make plt bigger before printing
+    
+    if args.ct != "0":
+        title = "Mod {} VS Mod {} Smoothed score with window size 500".format(args.mod_1, args.mod_2)
+        plt.title(title)
+        plt.xlabel("Time Step")
+        plt.ylabel("Mean Reward")
+    else:
+        title = "Mod {} VS Mod {} Rising Best Mean".format(args.mod_1, args.mod_2)
+        plt.title(title)
+        plt.xlabel("Time Step")
+        plt.ylabel("Mean Reward")
+
+
+    plt.legend()
+    #save the plot
+    plt.savefig("eval.png")
+        
+main()

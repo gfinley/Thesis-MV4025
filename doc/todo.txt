@@ -1,0 +1,61 @@
+To Do
+
+Clicking unmarked destination hex results in error and crash.
+
+play.html allows selecting a faction even when socket has closed due to an error.
+
+Turn off normalized images (divide by 255) for all training scripts. Already done for train_lab4.py as an example.
+
+To enable logging how score is improving during training, make custom replacement for SBL3/common/callbacks.py:EvalCallback should be created that uses a replacement for SBL3/common/evaluation.py:evaluate_policy() that returns score information.
+
+Change play.html GUI so Reset->Restart to avoid confusion with Gym reset() which maps to next-game.
+
+Modify map editor to have "all in one functionality", including placing automatically named units, removing units, loading complete scenarios as a starting point. Modes (dropdown or radio button): terrain, units, export
+
+With Boron rewArt, losses of friendlies after the last hostile kill does not lower net reward. Perhaps there should be an additional reward on termination that is proportional to the fraction of friendly force remaining. Perhaps (orig_hostile_strenght - final_hostile_strength) * (final_own_strength / orig_own_strength)
+
+Consolidate the server/train_*.py files
+
+Clean up redundant code in neural.py and gym_ai_surrogate.py
+
+Demonstrate league learning. Create vector environment where opponents are selected from the league.
+
+Implement separate AI to select next unit to move
+
+AI should select the best legal move (rather than sometimes selecting illegal moves which get turned into no-ops)
+
+
+City control visualization (small colored markers at center of city hexes?)
+
+Initial control of cities should be set in the map editor and scenario (parameter) JSON
+
+Setup phase should be optional. If there are setup hexes, there should be a setup phase, otherwise not.
+
+Add regression tests (server-side only)
+
+Unit:fromPortable2 needs to be renamed fromPortable (without the 2) and all scenarios, OOBs, etc. need to be tested to work
+
+Consider supporting experimental designs with automatic data collection.
+
+Consider bundling saved models with extra data (at minimum, the training scenario used)
+
+Find better way to name variables like _setup_mode in play2.html to indicate that they are used for communication between files. Upper case and no leading underscore?
+
+
+Add max strength into unit data to allow for units of the same type that nonetheless have different power when at full strength.
+
+
+Consider making server robust against illegal actions. The mover should maintain canMove as True and no exception should be thrown. Should an observation be provided in return?
+
+
+
+Map editor does not erase paths (roads) upon resizing the grid
+
+Consider changing strength visualization to being excess strength over threshold
+
+
+Add GUI for OOB. Create integrated scenario editor.
+
+
+
+

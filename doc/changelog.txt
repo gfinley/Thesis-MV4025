@@ -1,0 +1,38 @@
+Changes After Lab 1 Release
+
+Armor kills armor faster
+Mechinf kills armor faster
+Mechinf does not benefit from rough terrain
+All kill rates halved
+Tank kill rate for mechinf now between infantry and armor
+A unit selected for action may now be deselected by clicking the unit again
+Score is displayed in browser
+
+Changes after Lab 2 Release
+
+Random scenario generator (random-scenario.html) added
+Player actions no longer change game state after game is over (game state is terminal)
+-v verbosity flag added to server to control whether message traffic is displayed
+--rep N switch will run N replications of the battle
+Ability to reset the game via browser or on request by AI added
+Very simple potential field (hex scoring) style AI added (AI type "field")
+Infantry is now less vulnerable in marsh
+Artillery is now less effective vs mechinf
+Artillery is now less effective vs artillery
+Server has nonzero sleep in the main loop whenever a websocket is connected to save CPU cycles
+Switch is available to cause server to write a replay.js file. This file can be moved to the browser directory, which will enable "playback.html" to replay the fight.
+Hex false colors may be passed from AI back to server and stored for replay for use in debugging (potential field AI and dijstra_demo demo this capability)
+
+Changes after Lab 3 Release
+
+City ownership added to observations
+Potential field AI now captures cities
+Game is not over (terminal state) until 20 phases have elapsed (does not end early if opponent units are all destroyed)
+Gym interface added
+Two hex movement actions now supported
+
+Changes after Lab 4 Release
+
+neural.py AI for pretrained neural nets added
+Bug in shootback.py where canMove was not getting reset fixed
+Bug where captured cities were not being scored properly
