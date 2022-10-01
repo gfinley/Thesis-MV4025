@@ -1,4 +1,5 @@
 import scenario
+import scenario_navy
 
 scenario_generator_registry = {
     "clear-inf-6" : (scenario.clear_square_factory, {'size':6, 'min_units':2, 'max_units':4}),
