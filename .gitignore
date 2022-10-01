@@ -1,4 +1,6 @@
 browser/replay.js
 .vscode/launch.json
-
+server/*.txt
 server/ocean_replay.js
+server/training_run.sh
+server/run_training.sh

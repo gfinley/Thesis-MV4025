@@ -8,7 +8,8 @@ var Style = {};
         'marsh'     : 'palegreen',
         'rough'     : 'wheat',
         'urban'     : 'lightgray',
-        'unused'    : 'gray'
+        'unused'    : 'gray',
+        'ocean'     : 'lightblue',
     };
     
     Style.terrainEdgeIndex = {

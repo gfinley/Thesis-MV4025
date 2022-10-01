@@ -3,7 +3,8 @@
 #for RAY
 #sbatch training_run.sh 21 2 8
 
-sbatch training_run.sh 10 2 5
+#ray navy
+sbatch training_run.sh 21 2 8 DQN DQN_test
 
 #FOR TRAIN_LAB%
 #sbatch training_run.sh

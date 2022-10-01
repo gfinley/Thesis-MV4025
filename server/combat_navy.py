@@ -1,7 +1,7 @@
 #combat range of the unit
-# units will be destryoer, submarine, and transport ship
+# units will be destryer, submarine, and transport ship
 range = {
-    "destroyer" : 1,
+    "destroyer" : 2,
     "submarine" : 2,
     "transport" : 1
 }
@@ -43,7 +43,7 @@ firepower["transport"] = {
 ##RESERVED FOR FUTURE USE
 defensivefp = {}
 defensivefp["destroyer"] = {
-    "destroyer" : 0,
+    "destroyer" : .5,
     "submarine" : 0,
     "transport" : 0
 }

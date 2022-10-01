@@ -1,41 +1,44 @@
 # Import the RL algorithm (Algorithm) we would like to use.
 from ast import arg
 from ray.rllib.algorithms.ppo import PPO
+
+#DQN imports
+from ray.rllib.algorithms.dqn.dqn_torch_policy import DQNTorchPolicy
+from ray.rllib.algorithms.simple_q.simple_q import (
+    SimpleQ,
+    SimpleQConfig,
+)
+from ray.rllib.algorithms.dqn import dqn
+from ray.rllib.algorithms.dqn.dqn import DQNConfig
+
+
 import ray
 import os
 
 import gym_interface
 
 import hexagdly
-from stable_baselines3 import PPO, DQN
+#from stable_baselines3 import PPO, DQN
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.policies import ActorCriticCnnPolicy
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor, NatureCNN
 from stable_baselines3.common.utils import get_schedule_fn
 
 from stable_baselines3.dqn.policies import CnnPolicy
-
 import gym
 import torch as th
 from torch import nn as nn
 import gym_interface
-
 from gym import spaces
 import numpy as np
 import random
-
 import hexagdly
-
 import argparse
-
 from collections import OrderedDict
-
 from ray.rllib.algorithms import ppo
-
+#from ray.rllib.algorithms import dqb
 from ray.tune.registry import register_env
-
 from ray.rllib.models import ModelCatalog
-
 from ray.rllib.models.tf.fcnet import FullyConnectedNetwork
 from ray.rllib.models.torch.torch_modelv2 import TorchModelV2
 from ray.rllib.models.torch.fcnet import FullyConnectedNetwork as TorchFC
@@ -50,6 +53,7 @@ parser.add_argument("--name")
 parser.add_argument("--worker_num")
 parser.add_argument("--worker_cpu")
 parser.add_argument("--driver_cpu")
+parser.add_argument("--algo")
 
 args = parser.parse_args()
 
@@ -168,9 +172,6 @@ args = parser.parse_args()
 run_name = args.name
 
 
-
-
-
 stop_config = {
     #"training_iteration": 1,
     "timesteps_total": 500000,
@@ -181,10 +182,10 @@ ray_config = {
         "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
-            "scenario":"test-inf-1500", 
+            "scenario":"clear-navy-6", 
             "saveReplay":False, 
             "actions19":False, 
-            "ai":"ray", 
+            "ai":"gym14", 
             "verbose":False, 
             "scenarioSeed":4025, 
             "scenarioCycle":0,
@@ -200,8 +201,6 @@ ray_config = {
         "framework": "torch",
         "num_cpus_per_worker" : int(args.worker_cpu),
         "num_cpus_for_driver": int(args.driver_cpu),
-
-
         "ignore_worker_failures": True,
     }
 
@@ -223,8 +222,11 @@ ray.init()
 
 #make a ray tunner
 
-
-algo = ppo.PPO(env="atlatl", config=ray_config)  # config to pass to env class
+#algo development area
+if args.algo is not None:
+    algo = dqn.DQN(env="atlatl", config=ray_config)
+else:
+    algo = ppo.PPO(env="atlatl", config=ray_config)  # config to pass to env class
 
 
 def run_tune():

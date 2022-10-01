@@ -6,6 +6,7 @@
     "configurations": [
 
 
+
         {
             "name": "Python: Current File",
             "type": "python",
@@ -148,7 +149,27 @@
                 "ocean_replay.js"
             ]
         },
-        
+                {
+            "name": "Ray DQN test",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/Thesis-MV4025/server/ray_run.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "--name",
+                "ray_memory_test",
+                "--worker_num",
+                "0",
+                "--worker_cpu",
+                "0",
+                "--driver_cpu",
+                "1",
+                "--algo",
+                "DQN"
+            ]
+        },
     ]
     
 }
