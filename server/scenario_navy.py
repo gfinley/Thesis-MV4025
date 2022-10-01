@@ -52,7 +52,7 @@ def clear_ocean_factory(size=6, min_units=1, max_units=3, num_cities=0, scenario
         if size<4:
             raise Exception(f'Requested size ({size}) too small (minimum is 4)')
         mapData = map.MapData()
-        mapData.createHexGrid(size,size)
+        mapData.createOceanHexGrid(size,size)
         unitData = unit.UnitData()
         def _add_units(faction,start_hexes):
             n = random.randint(min_units,max_units)

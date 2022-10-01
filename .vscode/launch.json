@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: Current File",
             "type": "python",
@@ -124,6 +125,29 @@
                 //"debug_replay_baseline.js"
             ]
         },
+        {
+            "name": "Ocean gen test run",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/Thesis-MV4025/server/server.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "clear-navy-6",
+                "--blueAI",
+                "pass-agg",
+                "--redAI",
+                "pass-agg",
+                "--nReps",
+                "10",
+                "--scenarioSeed",
+                "4025",
+                "--blueReplay",
+                "debug_replay_baseline.js"
+            ]
+        },
+        
     ]
     
 }

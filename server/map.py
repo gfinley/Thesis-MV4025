@@ -33,6 +33,16 @@ class MapData:
             for r in range(rows):
                 for c in range(cols):
                     Hex(c,r,terrain,self)
+    #Atlatl Navy
+    #added to support ocean map generation
+    def createOceanHexGrid(self,rows,cols):
+            self.edgeIndex = {} # Point pairs to edges
+            terrain = "ocean"
+            for r in range(rows):
+                for c in range(cols):
+                    Hex(c,r,terrain,self)
+
+
     def toString(self):
         return json.dumps( self.toPortable() )
     def toPortable(self):

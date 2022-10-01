@@ -1,6 +1,13 @@
 import map
-import mobility
-import combat
+
+
+
+##TOGGLE FOR NAVY COMBAT UNITS VS ATLATL VANILLA UNITS
+#import combat <---atlatl vanilla
+#import mobility <--atlatl vanilla
+
+import combat_navy as combat
+import mobility_navy as mobility
 from random import random
 
 class UnitData:

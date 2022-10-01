@@ -17,7 +17,10 @@ import map
 import status
 import json
 import copy
-import combat
+
+#TOGGLE FOR atlatl navy
+import combat_navy as combat
+
 import random
 from unit import UnitData, fromPortable
 
