@@ -1,0 +1,129 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/atlatl/server/",
+            "args":[
+                "dqn",
+                "1000000",
+                "0"
+
+            ]
+        },
+        {
+            "name": "ppo_100,000_0 VS Pass-agg",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/atlatl/server/server.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "city-inf-5",
+                "--blueAI",
+                "mando-fun-lab3",
+                "--redAI",
+                "pass-agg",
+                "--nReps",
+                "10",
+                ">",
+                "ppo_100K_0.txt"
+            ]
+        },
+        {
+            "name": "DQN Train",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/atlatl/server/train_lab3.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "dqn",
+                "10000",        
+                "0"
+                ]
+        },
+        {
+            "name": "Lab4 mod_X run",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/Thesis-MV4025/server/server.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "fog-inf-7",
+                "--blueAI",
+                "mod_6",
+                "--redAI",
+                "pass-agg-fog",
+                "--nReps",
+                "10",
+                "--scenarioSeed",
+                "4025",
+                "--blueReplay",
+                "debug_replay_baseline.js"
+            ]
+        },
+        {
+            "name": "Training Test",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/MV4025-Lab4/server/train_lab4.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "--model",
+                "mod_1",
+                "--length",
+                "100000"
+            ]
+        },
+        {
+            "name": "Ray Test",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/Thesis-MV4025/server/ray_run.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "--name",
+                "ray_memory_test",
+                "--worker_num",
+                "0",
+                "--worker_cpu",
+                "0",
+                "--driver_cpu",
+                "1",
+            ]
+        },
+        {
+            "name": "Memory rework test",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/matthew.finley/Thesis-MV4025/server/train_lab5.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "/home/matthew.finley/Thesis-MV4025/server",
+            "args": [
+                "--model",
+                "mod_1",
+                "--length",
+                "100000"
+                //"--blueReplay",
+                //"debug_replay_baseline.js"
+            ]
+        },
+    ]
+    
+}
