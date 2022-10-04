@@ -12,4 +12,5 @@ scenario_generator_registry = {
 
     #ocean scenarios
     "clear-navy-6" : (scenario_navy.clear_ocean_factory, {'size':6, 'min_units':1, 'max_units':2}),
+    "island_small-6" : (scenario_navy.island_ocean_factory, {'size':6, "number_of_islands":1, 'min_units':1, 'max_units':2}),
 }

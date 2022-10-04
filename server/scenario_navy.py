@@ -30,7 +30,6 @@ def flip_colors(scenario):
     return flipped_scenario
 
 
-
 def clear_ocean_factory(size=6, min_units=1, max_units=3, num_cities=0, scenarioSeed=None, scenarioCycle=0, balance=False, max_phases=10, fog_of_war=False):
     balance_next = False
     last_scenario = None
@@ -84,6 +83,84 @@ def clear_ocean_factory(size=6, min_units=1, max_units=3, num_cities=0, scenario
         last_scenario = scenario
         return scenario
     return inner
+
+
+def island_ocean_factory(size=6, min_units=1, max_units=3, number_of_islands=1, scenarioSeed=None, scenarioCycle=0, balance=False, max_phases=10, fog_of_war=False, island_size=2):
+    balance_next = False
+    last_scenario = None
+    priorstate = random.getstate()
+    random.seed(scenarioSeed)
+    randstate = random.getstate()
+    random.setstate(priorstate)
+    count = 0
+    def inner():
+        nonlocal randstate, scenarioSeed, scenarioCycle, count, balance_next, last_scenario
+        global unit #this was rereiered to fix unbounded local variable error, but I don't know why, works in below function
+        if balance:
+            if balance_next:
+                balance_next = False
+                return flip_colors(last_scenario)
+            else:
+                balance_next = True
+        priorstate = random.getstate()
+        random.setstate(randstate)
+        if size<4:
+            raise Exception(f'Requested size ({size}) too small (minimum is 4)')
+        
+        unitData = unit.UnitData()
+        mapData = map.MapData()
+        mapData.createOceanHexGrid(size,size)
+        
+        def _add_units(faction,start_hexes):
+            n = random.randint(min_units,max_units)
+            for i in range(n):
+                hex = random.choice(start_hexes)
+                start_hexes.remove(hex)
+                u_param = {"hex":hex,"type":"destroyer","longName":str(i),"faction":faction,"currentStrength":100}
+                unt = unit.Unit(u_param,unitData,mapData)
+                #if(faction == "red"):
+                #    print("start red hex: {} {}".format(hex.x_offset, hex.y_offset))
+            return n
+
+        blue_side, red_side = random.choice((("north","south"),("south","north"),("east","west"),("west","east")))
+        blue_hexes = get_setup_hex_ids(size,blue_side)
+        red_hexes = get_setup_hex_ids(size,red_side)
+        n_blue = _add_units("blue",blue_hexes)
+        n_red = _add_units("red",red_hexes)
+
+        all_hexes = mapData.hexes()
+        
+        #build all hexes
+        island_hexes = []
+        for hex in all_hexes:
+            if hex.terrain == "ocean":
+                island_hexes.append(hex)
+        for single_unit in unitData.units():
+            island_hexes.remove(single_unit.hex)
+
+        #pick some number of hexes to make as islands
+        island_hexes = random.sample(island_hexes, number_of_islands)
+
+        #change every island in mapData to the terrain type "island"
+        for hex in mapData.hexes():
+            if hex in island_hexes:
+                hex.terrain = "land"
+
+        count = count + 1
+        if scenarioCycle:
+            count %= scenarioCycle
+        if scenarioCycle!=0 and count==0:
+            random.seed(scenarioSeed)
+        randstate = random.getstate()    
+        score = {"maxPhases":max_phases,"lossPenalty":-1,"cityScore":0}
+        random.setstate(priorstate)
+        scenario = {"map":mapData.toPortable(), "units":unitData.toPortable(), "score":score}
+        scenario["map"]["fogOfWar"] = fog_of_war
+        last_scenario = scenario
+        return scenario
+    return inner
+
+
 
 
 def get_setup_hex_ids(size, side):
