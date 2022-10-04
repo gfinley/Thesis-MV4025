@@ -1,5 +1,6 @@
 # Import the RL algorithm (Algorithm) we would like to use.
 from ast import arg
+#from pyrsistent import T
 from ray.rllib.algorithms.ppo import PPO
 
 #DQN imports
@@ -182,9 +183,9 @@ ray_config = {
         "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
-            "scenario":"clear-navy-6", 
+            "scenario":"island_small-6", 
             "saveReplay":False, 
-            "actions19":False, 
+            "actions19":True, 
             "ai":"gym14", 
             "verbose":False, 
             "scenarioSeed":4025, 
@@ -232,24 +233,39 @@ else:
 def run_tune():
     tune.Tuner(
     "PPO",
-    run_config=air.RunConfig(stop={"timesteps_total": 500000}, checkpoint_freq=10000, checkpoint_at_end=True, max_failures=1),
+    run_config=air.RunConfig(stop={"timesteps_total": 100000}),
     param_space={
         "env": "atlatl",
-        "env_config": ray_config,
+        "env_config": 
+        {
+            "role" :"blue",
+            "versusAI":"pass-agg", 
+            "scenario":"clear-navy-6", 
+            "saveReplay":False, 
+            "actions19":True, 
+            "ai":"gym14", 
+            "verbose":False, 
+            "scenarioSeed":4025, 
+            "scenarioCycle":0,
+        },
+        "disable_env_checking":True,
+        # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
         "num_gpus": 0,
-        "num_workers": 6,  # parallelism
-        "framework": "torch",
-        "num_cpus_per_worker" : 4,
         "model": {
             "custom_model": "my_model2",
             "vf_share_layers": False,
         },
-        "disable_env_checking":True,
-        "lr": tune.grid_search([0.01]),
+        "num_workers": int(args.worker_num),  # parallelism
+        "framework": "torch",
+        "num_cpus_per_worker" : int(args.worker_cpu),
+        "num_cpus_for_driver": int(args.driver_cpu),
+        "ignore_worker_failures": True,
         },
         ).fit()
     return 
 
+#results = run_tune()
+#print(results)
 
 for _ in range(500):
     result = algo.train()
@@ -260,6 +276,6 @@ for _ in range(500):
 #print(pretty_print(result))
 
 
-algo.save("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name)
+#algo.save("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name)
 #algo.export_model("model", "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_model")
 #algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_policy")

@@ -2,7 +2,7 @@
 #SBATCH -N 1
 #SBATCH --mem-per-cpu=2G
 #SBATCH --cpus-per-task=50
-#SBATCH --output=Navy_DQN_test_%j.txt
+#SBATCH --output=Navy_Tune_test_%j.txt
 #SBATCH --time=15-23:00:00
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=matthew.finley@nps.edu
