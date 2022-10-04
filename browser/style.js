@@ -10,6 +10,7 @@ var Style = {};
         'urban'     : 'lightgray',
         'unused'    : 'gray',
         'ocean'     : 'lightblue',
+        'land'      : 'lightgreen',
     };
     
     Style.terrainEdgeIndex = {
