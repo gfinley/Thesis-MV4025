@@ -31,7 +31,7 @@ class Args:
         self.nReps = -1 # next-game only happens on explicit reset()
 
 class GymEnvironment:
-    def __init__(self, role="blue", versusAI="passive", versusNeuralNet=None, scenario="city-inf-5", saveReplay=False, actions19=False, ai="ray", openSocket=False, verbose=False, scenarioSeed=None, scenarioCycle=0):
+    def __init__(self, role="blue", versusAI="passive", versusNeuralNet=None, scenario="city-inf-5", saveReplay=False, actions19=False, ai="gym14", openSocket=False, verbose=False, scenarioSeed=None, scenarioCycle=0):
         # ai should be one of: "gym", "gymx2", "gym12", "gym13", "gym14"
         self.role = role
         if role=="red":
