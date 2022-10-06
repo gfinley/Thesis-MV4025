@@ -40,7 +40,7 @@ def init(args):
         if args.blueNeuralNet:
             kwargs["neuralNet"] = args.blueNeuralNet
         ai = constructor("blue", kwargs)
-        if args.blueAI in {"gym", "gymx2", "gym12", "gym13", "gym14","gym15","ray"}:
+        if args.blueAI in {"gym", "gymx2", "gym12", "gym13", "gym14","gym15","ray","NAVY_SIMPLE"}:
             gym_ai = ai
         client_functions.append(ai.process)
         

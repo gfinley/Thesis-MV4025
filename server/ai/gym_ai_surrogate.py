@@ -430,6 +430,7 @@ class AI15(AI):
     def getNFeatures(self):
         return 15
 
+
 class AI_RAY(AI):
     def __init__(self, role, kwargs):
         AI.__init__(self, role, kwargs)
@@ -524,6 +525,40 @@ class AI_RAY(AI):
         return result
     def getNFeatures(self):
         return 1
+
+class NAVY_SIMPLE(AI):
+    def __init__(self, role, kwargs):
+        AI.__init__(self, role, kwargs)
+    def observation(self):
+        next_mover = self.nextMover()
+        legal_move_hexes = self.legalMoveHexes(next_mover)
+        phase_indicator = 0.9**self.phaseCount
+        return np.stack( [
+                            self.feature(moverFeatureFactory(next_mover),"unit"),
+                            self.feature(canMoveFeature,"unit"),
+                            self.feature(legalMoveFeatureFactory(legal_move_hexes),"hex"),
+                            self.feature(blueUnitFeature,"unit"), 
+                            self.feature(redUnitFeature,"unit"),
+                            self.feature(unitTypeFeatureFactory("destroyer"),"unit"),
+                            self.feature(unitTypeFeatureFactory("submarine"),"unit"),
+                            self.feature(unitTypeFeatureFactory("transport"),"unit"),
+                            self.feature(terrainFeatureFactory("ocean"),"hex"),
+                            self.feature(terrainFeatureFactory("land"),"hex"),
+                            self.feature(constantFeatureFactory(phase_indicator),"hex")
+                         ] )
+    def legalMoveHexes(self, mover):
+        result = {}
+        if mover:
+            fireTargets = mover.findFireTargets(self.unitData)
+            for unt in fireTargets:
+                result[unt.hex.id] = True
+            moveTargets = mover.findMoveTargets(self.mapData, self.unitData)
+            for hex in moveTargets:
+                result[hex.id] = True
+        return result
+    def getNFeatures(self):
+        return 11
+
 
 
 async def client(ai, uri):

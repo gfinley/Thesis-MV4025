@@ -223,7 +223,7 @@ parser.add_argument("--model")
 args = parser.parse_args()
 
 
-env = gym_interface.GymEnvironment(role="blue", versusAI="pass-agg", scenario="city-inf-5", saveReplay=False, actions19=False, ai="gym14", verbose=False, scenarioSeed=4025, scenarioCycle=0)
+env = gym_interface.GymEnvironment(role="blue", versusAI="pass-agg", scenario="clear-navy-6", saveReplay=False, actions19=True, ai="NAVY_SIMPLE", verbose=False, scenarioSeed=4025, scenarioCycle=0)
 
 #policy_kwargs = { "features_extractor_class" : MyCNN }
 #policy = ActorCriticCnnPolicy # for PPO
@@ -303,8 +303,8 @@ elif args.model == "mod_9":
 #model = PPO.load("ppo_save.zip")  
 
 model.set_env(env)
-save_name = "model_Large_PPO_{}_{}".format(args.model, args.length)
-log_save_name = "log/Larg_model_PPO_{}_{}".format(args.model, args.length)
+save_name = "NAVY_MODEL_TEST_{}_{}".format(args.model, args.length)
+log_save_name = "log/NAVY_MODEL_TEST_{}_{}".format(args.model, args.length)
 # n_eval_episodes should be as large as you can stand for scenarioCycle of 0, and at least the cycle length otherwise
 model.learn(total_timesteps=int(args.length), log_interval=10000, eval_env=env, eval_freq=1000, n_eval_episodes=5, eval_log_path=log_save_name) 
 

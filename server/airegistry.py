@@ -36,9 +36,10 @@ ai_registry = {
               "gym13" : (ai.gym_ai_surrogate.AI13, {}),
               "gym14" : (ai.gym_ai_surrogate.AI14, {}),
               "gym15" : (ai.gym_ai_surrogate.AI15, {}),
+              
               "burt-reynolds-lab2" : (ai.burt_reynolds_lab2.AI, {}),
 
-
+              "NAVY_SIMPLE" : (ai.gym_ai_surrogate.NAVY_SIMPLE, {}),
               "ray" : (ai.gym_ai_surrogate.AI_RAY, {}),
              }
              

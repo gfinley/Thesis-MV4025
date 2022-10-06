@@ -24,7 +24,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.policies import ActorCriticCnnPolicy
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor, NatureCNN
 from stable_baselines3.common.utils import get_schedule_fn
-
+from stable_baselines3.common import base_class
 from stable_baselines3.dqn.policies import CnnPolicy
 import gym
 import torch as th
@@ -267,10 +267,13 @@ def run_tune():
 #results = run_tune()
 #print(results)
 
-for _ in range(500):
+for _ in range(2):
     result = algo.train()
     print(pretty_print(result))
     
+    
+run_name = "home/matthew.finley/Thesis-MV4025/server/ray_test_dir/"
+base_class.save(self=algo, checkpoint_dir=run_name)
 
 #result = algo.evaluate()
 #print(pretty_print(result))
