@@ -7,6 +7,9 @@ import unit
 import copy
 
 
+import naval_utils
+
+
 
 def from_file_factory(filename):
     scenario_dir = "scenarios/"
@@ -274,6 +277,92 @@ def island_large_ocean_factory(size=6, min_units=1, max_units=3, number_of_islan
     return inner
 
 
+def blockad_run_simple_factory(size=6, min_units=1, max_units=3, num_blue_transports = 1, scenarioSeed=None, scenarioCycle=0, balance=False, max_phases=15, fog_of_war=False):
+    #work around for gamedata not transfering through the atlatl
+    
+    #print(naval_utils.blue_goals)
+    
+    balance_next = False
+    last_scenario = None
+    priorstate = random.getstate()
+    random.seed(scenarioSeed)
+    randstate = random.getstate()
+    random.setstate(priorstate)
+    count = 0
+    def inner():
+        nonlocal randstate, scenarioSeed, scenarioCycle, count, balance_next, last_scenario
+        if balance:
+            if balance_next:
+                balance_next = False
+                return flip_colors(last_scenario)
+            else:
+                balance_next = True
+        priorstate = random.getstate()
+        random.setstate(randstate)
+        if size<4:
+            raise Exception(f'Requested size ({size}) too small (minimum is 4)')
+        mapData = map.MapData()
+        mapData.createOceanHexGrid(size,size)
+        unitData = unit.UnitData()
+        def _add_units(faction,start_hexes):
+            n = random.randint(min_units,max_units)
+            for i in range(n):
+                hex = random.choice(start_hexes)
+                start_hexes.remove(hex)
+                u_param = {"hex":hex,"type":"destroyer","longName":str(i),"faction":faction,"currentStrength":100}
+                unt = unit.Unit(u_param,unitData,mapData)
+                #if(faction == "red"):
+                #    print("start red hex: {} {}".format(hex.x_offset, hex.y_offset))
+            return n
+                
+        #function added to support adding different unit type, maintained old one for backwards compatability
+        def _add_units_dynamic(faction,start_hexes,unit_type,number):
+            for i in range(number):
+                hex = random.choice(start_hexes)
+                start_hexes.remove(hex)
+                #"unit type will be added, must match a unit combat_navy "
+                u_param = {"hex":hex,"type":unit_type ,"longName":str(i),"faction":faction,"currentStrength":100}
+                unt = unit.Unit(u_param,unitData,mapData)
+                #if(faction == "red"):
+                #    print("start red hex: {} {}".format(hex.x_offset, hex.y_offset))
+            return number
+        
+        blue_side, red_side = random.choice((("north","south"),("south","north"),("east","west"),("west","east")))
+        blue_hexes = get_setup_hex_ids(size,blue_side)
+        red_hexes = get_setup_hex_ids(size,red_side)
+        n_blue = _add_units("blue",blue_hexes)
+        n_red = _add_units("red",red_hexes)
+        n_blue_transport = _add_units_dynamic("blue",blue_hexes,"transport",num_blue_transports)
+        
+        
+        #for the blocade running scenario, we want to make sure that the blue side has a transport that has a target position within the red side
+        #get random red hex
+        #shifted to using naval_utils as array holder, could not get to carry though in scenario variable
+        #this does not change the map at all, for a visualization the hex type will need to be changed to somesort of "goal" hex
+        naval_utils.clear_blue_goals()
+        naval_utils.set_blue_goals(random.choice(red_hexes))
+        
+        #make a function that takes the goal hex to an array for portablility
+        def _goal_toPortable(hexes):
+            goal_array = []
+            for hex in hexes:
+                goal_array.append(mapData.hexIndex[hex].portableCopy())
+            return goal_array
+            
+
+        count = count + 1
+        if scenarioCycle:
+            count %= scenarioCycle
+        if scenarioCycle!=0 and count==0:
+            random.seed(scenarioSeed)
+        randstate = random.getstate()    
+        score = {"maxPhases":max_phases,"lossPenalty":-1,"cityScore":0}
+        random.setstate(priorstate)
+        scenario = {"map":mapData.toPortable(), "units":unitData.toPortable(), "score":score}
+        scenario["map"]["fogOfWar"] = fog_of_war
+        last_scenario = scenario
+        return scenario
+    return inner
 
 
 def get_setup_hex_ids(size, side):

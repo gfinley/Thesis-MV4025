@@ -13,6 +13,7 @@ action_count = 0
 
 #lab4 utils import
 import Lab4_util
+import naval_utils
 
 global util_red_units 
 global util_blue_units
@@ -168,6 +169,33 @@ class AI:
                 hex = unt.hex
                 if hex:
                     mat[hex.y_offset, hex.x_offset] = fn(unt)
+        return mat
+    
+    
+    def feature_navy_goal(self, fn, type):
+        count = 0
+        self.arrayIndex = {}
+        self.inverseIndex = []
+        for hexId in self.mapData.hexIndex:
+            self.arrayIndex[hexId] = count
+            self.inverseIndex.append(hexId)
+            count += 1
+        dim = self.mapData.getDimensions()
+        mat = np.zeros((dim['height'],dim['width']))
+            
+        #above unhanged from original Atlatl function, below modified to take input from map goal data and create feature currently all cases will flow into
+        #"else" part of function, structure maintained for furure use
+        if type=="hex":
+            for hexId in self.mapData.hexIndex:
+                hex = self.mapData.hexIndex[hexId]
+                x_mat, y_mat = hex.x_offset, hex.y_offset
+                mat[y_mat, x_mat] = fn(hex)
+        else: # type=="unit"
+            for hex in [naval_utils.get_blue_goals()]:
+                hex_actual = self.mapData.hexIndex[hex]
+                if hex_actual:
+                    x_mat, y_mat = hex_actual.x_offset, hex_actual.y_offset
+                    mat[y_mat, x_mat] = 1
         return mat
 
     #new feature for position uncertiniy
@@ -544,7 +572,10 @@ class NAVY_SIMPLE(AI):
                             self.feature(unitTypeFeatureFactory("transport"),"unit"),
                             self.feature(terrainFeatureFactory("ocean"),"hex"),
                             self.feature(terrainFeatureFactory("land"),"hex"),
-                            self.feature(constantFeatureFactory(phase_indicator),"hex")
+                            self.feature(constantFeatureFactory(phase_indicator),"hex"),
+                            
+                            #blue goal for transport ships
+                            self.feature_navy_goal(goalFeatureFactory(),"other")
                          ] )
     def legalMoveHexes(self, mover):
         result = {}
@@ -557,7 +588,7 @@ class NAVY_SIMPLE(AI):
                 result[hex.id] = True
         return result
     def getNFeatures(self):
-        return 11
+        return 12
 
 
 
@@ -615,6 +646,16 @@ def legalMoveFeatureFactory(legal_move_hexes):
             return 1.0
         return 0.0
     return inner
+
+
+#goal feature factory added to support layer for blocade running goals
+def goalFeatureFactory():
+    def inner(hex):
+        if hex:
+            return 1.0
+        return 0.0
+    return inner
+
 
 def constantFeatureFactory(value):
     def inner(hex):

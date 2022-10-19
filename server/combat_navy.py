@@ -8,7 +8,7 @@ range = {
 
 sight = {   
     "destroyer" : 1,
-    "submarine" : 3,
+    "submarine" : 2,
     "transport" : 1
 }
 
@@ -34,9 +34,9 @@ firepower["submarine"] = {
     "transport" : 0.5
 }
 firepower["transport"] = {
-    "destroyer" : 0.5,
-    "submarine" : 0.5,
-    "transport" : 1.0
+    "destroyer" : 0.1,
+    "submarine" : 0.1,
+    "transport" : 0.1
 }
 
 #defensive firepower matrixes for the units against other ubnits

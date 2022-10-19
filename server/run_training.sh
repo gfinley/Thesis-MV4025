@@ -4,7 +4,7 @@
 #sbatch training_run.sh 21 2 8
 
 #ray navy
-sbatch training_run.sh 21 2 8 DQN Tune_test_PPO_2000000
+sbatch training_run.sh 21 2 8 DQN DQN_HEX_TEST
 
 #FOR TRAIN_LAB%
 #sbatch training_run.sh

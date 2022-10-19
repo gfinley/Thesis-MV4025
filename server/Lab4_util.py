@@ -29,7 +29,7 @@ util_game_Index = []
 possible_hexes = []
 
 
-game_size = 1500
+game_size = 6
 
 #default for origional blue
 global mat 

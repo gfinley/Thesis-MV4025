@@ -113,7 +113,6 @@ class HexBlock2(nn.Module):
         x = self.relu(x)
         return x
 
-
 class MyCNN(BaseFeaturesExtractor):
     def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 512, n_residual_layers = 7, use_residual = False):
         super(MyCNN, self).__init__(observation_space, features_dim)
@@ -147,7 +146,6 @@ class MyCNN(BaseFeaturesExtractor):
         #print("--------------Here are the observations--------------------")
         #print(observations[4])
         return self.linear(self.cnn(observations))
-
 
 class CNN_MOD_2(BaseFeaturesExtractor):
     """
@@ -223,7 +221,7 @@ parser.add_argument("--model")
 args = parser.parse_args()
 
 
-env = gym_interface.GymEnvironment(role="blue", versusAI="pass-agg", scenario="clear-navy-6", saveReplay=False, actions19=True, ai="NAVY_SIMPLE", verbose=False, scenarioSeed=4025, scenarioCycle=0)
+env = gym_interface.GymEnvironment(role="blue", versusAI="pass-agg", scenario="clear-navy-6", saveReplay=False, actions19=True, ai="NAVY_SIMPLE", verbose=True, scenarioSeed=4025, scenarioCycle=0)
 
 #policy_kwargs = { "features_extractor_class" : MyCNN }
 #policy = ActorCriticCnnPolicy # for PPO
@@ -238,7 +236,7 @@ if args.model == "mod_1":
     policy = ActorCriticCnnPolicy # for PPO
     #policy = CnnPolicy # for DQN
 
-    model = PPO(policy, env, clip_range=0.2, policy_kwargs=policy_kwargs, verbose=1)
+    model = PPO(policy, env, clip_range=0.2, policy_kwargs=policy_kwargs, verbose=0)
     #model = DQN(policy, env, policy_kwargs=policy_kwargs, verbose=1)
 elif args.model == "mod_2":
     policy_kwargs = { "features_extractor_class" : CNN_MOD_2 }
