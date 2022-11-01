@@ -12,7 +12,7 @@ from ray.rllib.algorithms.dqn import dqn
 # This AI has a representation of the map and units, and updates the unit representation as it changes
 import map
 import unit
-
+import torch.nn.functional as F
 
 default_neural_net_file = "PPO_save_test_1_20221012-122916_state"
 action_count = 0
@@ -46,7 +46,7 @@ class AI:
             neural_net_file = default_neural_net_file
         self.dqn = kwargs["dqn"]
         if self.dqn:
-            self.model = torch.load(neural_net_file)
+            self.model = torch.jit.load("ai/model.pt")
         else:
             self.model = torch.load(neural_net_file)
             self.model.eval()
@@ -65,8 +65,15 @@ class AI:
     def moveMessage(self):
         while self.nextMover():
             debugPrint(f"processing next mover {self.nextMover().uniqueId}")
-            action, _states = self.model(self.model, self.observation())
-            msg = self.actionMessageDiscrete(action)
+            #obs_onehot= F.one_hot(torch.tensor([self.observation()]), 19)
+            with torch.no_grad():
+                action = self.model(input_dict={"obs":torch.tensor([self.observation()])}, state=[torch.empty(0)], seq_lens=None)
+            #print(output)
+            #get the index of the largest value in action[0][0]
+            largest_index = torch.argmax(action[0][0]).item()
+            #action_spread = torch.argmax[0][0]
+            #action = action_spread.index(max(action[0][0]))
+            msg = self.actionMessageDiscrete(largest_index)
             if msg != None:
                 return msg
         # No next mover

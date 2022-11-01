@@ -52,12 +52,6 @@ args = parser.parse_args()
 
 torch, nn = try_import_torch()
 
-stop_config = {
-    #"training_iteration": 1,
-    "timesteps_total": 500000,
-    #"episode_reward_mean": 350,
-}
-
 
 #change the config portion for evaluation
 ray_config = {
@@ -109,28 +103,31 @@ args = parser.parse_args()
 register_env("atlatl", lambda config: gym_interface.GymEnvironment(**config))
 
 
+checkpoint_path = 
+algo = dqn.DQN(env="atlatl", config=ray_config)
+agent.restore(checkpoint_path)
 
-ray.init()
+#ray.init()
 
 
 #make a ray tunner
 
 
-algo = ppo.PPO(env="atlatl", config=ray_config)  # config to pass to env class
+#algo = ppo.PPO(env="atlatl", config=ray_config)  # config to pass to env class
 
 run_name = args.name
 
 
 
-for _ in range(20):
-    result = algo.train()
-    print(pretty_print(result))
+#for _ in range(20):
+##    result = algo.train()
+#    print(pretty_print(result))
     
+#
+##result = algo.evaluate()
+#print(pretty_print(result))
 
-result = algo.evaluate()
-print(pretty_print(result))
 
-
-algo.save("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name)
+#algo.save("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name)
 #algo.export_model("model", "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_model")
 #algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_policy")

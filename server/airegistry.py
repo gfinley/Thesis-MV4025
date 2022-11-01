@@ -61,7 +61,7 @@ if IMPORT_NEURAL:
     ai_registry["mod_8"] = (ai.neural.AI15, {"neuralNet":"ai/model_mod_8_2000000.zip", "dqn":True, "doubledCoordinates":False})
     ai_registry["mod_9"] = (ai.neural.AI15, {"neuralNet":"ai/model_mod_9_3000000.zip", "dqn":True, "doubledCoordinates":False})
 
-    ai_registry["Ray_ai"] = (ai.neural.AI14, {"neuralNet":"DQN_test/checkpoint_000500/checkpoint-500", "dqn":False, "doubledCoordinates":False})
+    ai_registry["Ray_ai_test"] = (ai.neural_ray.NAVY_SIMPLE, {"neuralNet":"ai/model.pt", "dqn":True, "doubledCoordinates":False})
     ai_registry["Navy"] = (ai.neural_ray.NAVY_SIMPLE, {"neuralNet":"ai/model.pt", "dqn":False, "doubledCoordinates":False})
      
 

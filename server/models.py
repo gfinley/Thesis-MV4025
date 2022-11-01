@@ -307,7 +307,7 @@ class Navy_VisionNetwork(TorchModelV2, nn.Module):
         layers.append(nn.ReLU())
         layers.append(nn.Linear(512,512))
         layers.append(nn.ReLU())
-        layers.append(nn.Linear(512,256))
+        layers.append(nn.Linear(512,19))
         layers.append(nn.ReLU())
         
         self._logits = layers.pop() 
@@ -327,9 +327,6 @@ class Navy_VisionNetwork(TorchModelV2, nn.Module):
         # Permuate b/c data comes in as [B, dim, dim, channels]:
         #removed permutation becuase this is what I want>
         #self._features = self._features.permute(0, 3, 1, 2)
-        
-        
-        
         conv_out = self._convs(self._features)
         # Store features to save forward pass when getting value_function out.
         if not self._value_branch_separate:

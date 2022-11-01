@@ -230,14 +230,15 @@ ray_config = {
             ##"conv_activation": "relu",
             #"fcnet_hiddens": [512, 512],
             #"fcnet_activation": "relu",
-                    
+              
             "custom_model": "my_model_3",
             "custom_model_config": {
+                "hiddens":"False",     
                 "conv_filters" : [[64,[6,6],1],[64,[6,6],1]],
                 "conv_activation"  : "relu",
                 "post_fcnet_hiddens" : [512, 512],
                 "post_fcnet_activation" : "relu",
-                "no_final_linear" : False,
+                "no_final_linear" : True,
                 "vf_share_layers" : True,
                 },
             #"vf_share_layers": False,
@@ -278,45 +279,44 @@ else:
 
 def run_tune():
     tune.Tuner(
-    "PPO",
-    run_config=air.RunConfig(stop={"timesteps_total": 100000}),
+    "DQN",
+    run_config=air.RunConfig(stop={"timesteps_total": 10000}),
     param_space={
         "env": "atlatl",
-        "env_config": 
-        {
+        "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
-            "scenario":"clear-navy-6", 
+            "scenario":"blockade-6", 
             "saveReplay":False, 
             "actions19":True, 
-            "ai":"gym14", 
+            "ai":"NAVY_SIMPLE", 
             "verbose":False, 
             "scenarioSeed":4025, 
             "scenarioCycle":0,
         },
-        "disable_env_checking":True,
+         "disable_env_checking":True,
         # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
         "num_gpus": 0,
         "model": {
-            "custom_model": "my_model2",
-            "vf_share_layers": False,
+            "custom_model": "my_model_3",  
         },
-        "num_workers": int(args.worker_num),  # parallelism
-        "framework": "torch",
-        "num_cpus_per_worker" : int(args.worker_cpu),
-        "num_cpus_for_driver": int(args.driver_cpu),
-        "ignore_worker_failures": True,
-        },
-        ).fit()
+            "num_workers": int(args.worker_num),  # parallelism
+            "framework": "torch",
+            "num_cpus_per_worker" : int(args.worker_cpu),
+            "num_cpus_for_driver": int(args.driver_cpu),
+            "ignore_worker_failures": True,
+    }
+                ).fit()
     return 
 
 #results = run_tune()
 #print(results)
-train_length = 250
+train_length = 500
 
 for _ in range(train_length):
     result = algo.train()
     print(pretty_print(result))
+
     
     
 run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -325,8 +325,5 @@ run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datet
 #result = algo.evaluate()
 #print(pretty_print(result))
 
-
-algo.save("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name)
-algo.export_model("model", "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_model")
-algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_policy")
+algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"for_inference")
 torch.save(algo, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")

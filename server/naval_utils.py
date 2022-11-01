@@ -2,8 +2,6 @@ global blue_goals
 
 
 
-
-
 blue_goals = []
 
 def get_blue_goals():
