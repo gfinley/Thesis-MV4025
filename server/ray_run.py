@@ -311,7 +311,7 @@ def run_tune():
 
 #results = run_tune()
 #print(results)
-train_length = 500
+train_length = 2500
 
 for _ in range(train_length):
     result = algo.train()
