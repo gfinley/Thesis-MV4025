@@ -14,6 +14,11 @@ import map
 import unit
 import torch.nn.functional as F
 
+from ray.rllib.agents.ppo import PPOTrainer
+from ray.tune.registry import register_env
+import gym_interface
+import ray
+
 default_neural_net_file = "PPO_save_test_1_20221012-122916_state"
 action_count = 0
 
@@ -27,7 +32,7 @@ global NEXT_SPREAD_RED_PHASE
 global NEXT_SPREAD_BLUE_PHASE
 
 def debugPrint(str):
-    condition = True
+    condition = False
     if condition:
         print(str)
 
@@ -46,10 +51,68 @@ class AI:
             neural_net_file = default_neural_net_file
         self.dqn = kwargs["dqn"]
         if self.dqn:
+            
             self.model = torch.jit.load("ai/model.pt")
         else:
-            self.model = torch.load(neural_net_file)
-            self.model.eval()
+            ray_config = {
+        "env": "atlatl",  # or "corridor" if registered above
+        "env_config": {
+            "role" :"blue",
+            "versusAI":"pass-agg", 
+            "scenario":"city-inf-5", 
+            "saveReplay":False, 
+            "actions19":False, 
+            "ai":"gym14", 
+            "verbose":False, 
+            "scenarioSeed":4025, 
+            "scenarioCycle":0,
+        },
+        "evaluation_config": {
+        
+        "evaluation_num_workers": 0,
+        "evaluation_duration": 10,
+        "evaluation_duration_unit": "episodes",
+        "explore" : False,
+        },
+        "disable_env_checking":True,
+        # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
+        "num_gpus": 0,
+        "model": {
+            #"conv_filters": [[64,[1,1],1]],
+            ##"conv_activation": "relu",
+            #"fcnet_hiddens": [512, 512],
+            #"fcnet_activation": "relu",
+              
+            "custom_model": "my_model_4",
+            #nothing in this config matters
+            
+            #"custom_model_config": {
+            #    "hiddens":"False",     
+            #    "conv_filters" : [[64,[6,6],1],[64,[6,6],1]],
+            #    "conv_activation"  : "relu",
+            #    "no_final_linear" : True,
+            #    "vf_share_layers" : True,
+            #    },
+            #"vf_share_layers": False,
+        },
+        "num_workers": 1,  # parallelism
+        "framework": "torch",
+        "num_cpus_per_worker" : 0,
+        "num_cpus_for_driver": 1,
+        "ignore_worker_failures": True,
+        "create_env_on_driver":True,
+        
+        
+
+    }
+
+            ray.init()
+
+            checkpoint = "/home/matthew.finley/ray_results/PPO_atlatl_2022-11-06_10-15-47tbohh6_d/checkpoint_001500" 
+            register_env("atlatl", lambda config: gym_interface.GymEnvironment(**config))
+            restored_trainer = PPOTrainer(env="atlatl")
+            self.model = restored_trainer.restore(checkpoint)
+            
         self.doubledCoordinates = kwargs["doubledCoordinates"]
         self.mapData = None
         self.unitData = None
@@ -66,14 +129,19 @@ class AI:
         while self.nextMover():
             debugPrint(f"processing next mover {self.nextMover().uniqueId}")
             #obs_onehot= F.one_hot(torch.tensor([self.observation()]), 19)
-            with torch.no_grad():
-                action = self.model(input_dict={"obs":torch.tensor([self.observation()])}, state=[torch.empty(0)], seq_lens=None)
+            
+            action = self.model.compute_action(self.observation())
+            #with torch.no_grad():
+                
+            #    action = self.model(input_dict={"obs":torch.tensor([self.observation()])}, state=[torch.empty(0)], seq_lens=None)
+            
+            
             #print(output)
             #get the index of the largest value in action[0][0]
-            largest_index = torch.argmax(action[0][0]).item()
+            #largest_index = torch.argmax(action[0][0]).item()
             #action_spread = torch.argmax[0][0]
             #action = action_spread.index(max(action[0][0]))
-            msg = self.actionMessageDiscrete(largest_index)
+            msg = self.actionMessageDiscrete(action)
             if msg != None:
                 return msg
         # No next mover

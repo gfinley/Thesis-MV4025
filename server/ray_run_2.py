@@ -51,7 +51,7 @@ from ray.tune.logger import pretty_print
 from ray import air, tune
 
 #import for navy vision CNN testing
-from models import Navy_VisionNetwork,VisionNetwork_CNN,HEX_VisionNetwork
+from models import Navy_VisionNetwork,VisionNetwork_CNN,VisionNetwork,HEX_VisionNetwork
 
 
 parser = argparse.ArgumentParser()
@@ -61,7 +61,7 @@ parser.add_argument("--worker_num")
 parser.add_argument("--worker_cpu")
 parser.add_argument("--driver_cpu")
 parser.add_argument("--algo")
-parser.add_argument("--checkpoint")
+parser.add_argument("--model")
 
 args = parser.parse_args()
 
@@ -118,7 +118,7 @@ class MyCNN(BaseFeaturesExtractor):
         #print(observations[4])
         return self.linear(self.cnn(observations))
 
-class TorchCustomModel(TorchModelV2, nn.Module):
+class FC_NET(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
 
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
@@ -203,7 +203,7 @@ class TorchCustomModel_3(TorchModelV2, nn.Module):
 
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
-class TorchCustomModel_4(TorchModelV2, nn.Module):
+class Model_Vision(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
         TorchModelV2.__init__(
@@ -211,7 +211,7 @@ class TorchCustomModel_4(TorchModelV2, nn.Module):
         )
         nn.Module.__init__(self)
 
-        self.torch_sub_model = VisionNetwork_CNN(
+        self.torch_sub_model = VisionNetwork(
             obs_space, action_space, num_outputs, model_config, name
         )
 
@@ -222,7 +222,6 @@ class TorchCustomModel_4(TorchModelV2, nn.Module):
 
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
-
 
 class Hex_CNN(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
@@ -250,23 +249,63 @@ class Hex_CNN(TorchModelV2, nn.Module):
 args = parser.parse_args()
 run_name = args.name
 
+model_type = args.model
+model_type = str(model_type)
+
 ray_config = {
-        "env": "atlatl", 
+        "env": "atlatl",  # or "corridor" if registered above
         "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
             "scenario":"city-inf-5", 
-            "saveReplay":"0_HEX_REPLAY.js", 
+            "saveReplay":False, 
             "actions19":False, 
             "ai":"gym14", 
             "verbose":False, 
-            "scenarioSeed":4025, 
+            #"scenarioSeed":4025, 
             "scenarioCycle":0,
         },
-
         "disable_env_checking":True,
         # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
         "num_gpus": 1,
+        "model": {
+            
+            "custom_model": model_type,
+            
+            "post_fcnet_hiddens": [1600,512, 512,7],
+            "post_fcnet_activation": "relu",
+              
+           
+            "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+            "conv_activation"  : "relu",
+            "vf_share_layers" : True,
+
+        },
+        "num_workers": int(args.worker_num),  # parallelism
+        "num_envs_per_worker": 1,
+        "framework": "torch",
+        "num_cpus_per_worker" : int(args.worker_cpu),
+        "num_cpus_for_driver": int(args.driver_cpu),
+        "ignore_worker_failures": True,
+        "create_env_on_driver":True,
+    }
+
+ray_config_2 = {
+        "env": "atlatl",  # or "corridor" if registered above
+        "env_config": {
+            "role" :"blue",
+            "versusAI":"pass-agg", 
+            "scenario":"city-inf-5", 
+            "saveReplay":False, 
+            "actions19":False, 
+            "ai":"gym14", 
+            "verbose":False, 
+            #"scenarioSeed":4025, 
+            "scenarioCycle":0,
+        },
+        "disable_env_checking":True,
+        # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
+        "num_gpus": 0,
         "model": {
             
             "custom_model": "Hex_CNN",
@@ -280,21 +319,13 @@ ray_config = {
             "vf_share_layers" : True,
 
         },
-        "num_workers": 0,  # parallelism
+        "num_workers": int(args.worker_num),  # parallelism
         "framework": "torch",
-        "num_cpus_per_worker" : 1,
+        "num_cpus_per_worker" : int(args.worker_cpu),
         "num_cpus_for_driver": int(args.driver_cpu),
         "ignore_worker_failures": True,
-        "create_env_on_driver":True,
-        "evaluation_num_workers": 0,
-        "evaluation_duration": 1000,
-        "evaluation_interval": 1,
-        "evaluation_duration_unit": "episodes",
-        "explore" : False,
-        
-
+        "create_env_on_driver":False,
     }
-
 
 
 #get arguments
@@ -303,27 +334,57 @@ args = parser.parse_args()
 #register env and model with ray
 register_env("atlatl", lambda config: gym_interface.GymEnvironment(**config))
 ModelCatalog.register_custom_model( "MyCNN", MyCNN)
-ModelCatalog.register_custom_model("my_model", TorchCustomModel)
+ModelCatalog.register_custom_model("FC_NET", FC_NET)
 ModelCatalog.register_custom_model("my_model_2", TorchCustomModel_2)
 ModelCatalog.register_custom_model("my_model_3", TorchCustomModel_3)
-ModelCatalog.register_custom_model("my_model_4", TorchCustomModel_4)
+ModelCatalog.register_custom_model("Model_Vision", Model_Vision)
 ModelCatalog.register_custom_model("Navy_CNN", Navy_VisionNetwork)
-
 ModelCatalog.register_custom_model("Hex_CNN", Hex_CNN)
 
+print("starting ray")
 
+total_cpu = int(args.worker_num) * int(args.worker_cpu) + int(args.driver_cpu)
 
-ray.init()
+ray.init(num_cpus=total_cpu, num_gpus=1)
 
-checkpoint = args.checkpoint
+print("hello world, I am now making the trainer!")
 #make a ray tunner
 
+#algo development area
+#trainer = DQNTrainer(env="atlatl", config=ray_config)
+trainer = PPOTrainer(env="atlatl", config=ray_config)
+#config = trainer.get_config()
+#print(pretty_print(config))
 
-restored_trainer = PPOTrainer(env="atlatl", config=ray_config)
-restored_trainer.restore(checkpoint)
+print("hello world, I am now going to start training!")
+
+##results = run_tune()
+#print(results)
+train_length = 750
+print("starting training!")
+for _ in range(train_length):
+    result = trainer.train()
+    print(pretty_print(result))
+    if _ % 100 == 0:
+        checkpoint = trainer.save()
+checkpoint = trainer.save()
 
 #print(pretty_print(result))
 
-evaluation = restored_trainer.evaluate(checkpoint)
-print(pretty_print(evaluation))
+#evaluation = trainer.evaluate(checkpoint)
+#print(pretty_print(evaluation))
 
+#policy = trainer.get_policy()
+#print(policy.get_weights())
+#model = policy.model
+#run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+#torch.save(policy, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")    
+    
+
+
+
+#result = algo.evaluate()
+#print(pretty_print(result))
+
+#algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"for_inference")
+#torch.save(algo, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")
