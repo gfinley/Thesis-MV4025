@@ -19,7 +19,7 @@ import json
 import copy
 
 #TOGGLE FOR atlatl navy
-import combat_navy as combat
+import combat as combat
 
 import random
 from unit import UnitData, fromPortable

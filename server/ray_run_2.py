@@ -14,6 +14,7 @@ from ray.rllib.algorithms.dqn import dqn
 from ray.rllib.algorithms.dqn.dqn import DQNConfig
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.ppo import PPOTrainer
+from ray.rllib.agents.impala import ImpalaTrainer
 
 import datetime
 import ray
@@ -249,8 +250,12 @@ class Hex_CNN(TorchModelV2, nn.Module):
 args = parser.parse_args()
 run_name = args.name
 
+algo = args.algo
+
 model_type = args.model
 model_type = str(model_type)
+num_gpus = 0
+
 
 ray_config = {
         "env": "atlatl",  # or "corridor" if registered above
@@ -267,12 +272,12 @@ ray_config = {
         },
         "disable_env_checking":True,
         # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
-        "num_gpus": 1,
+        "num_gpus": num_gpus,
         "model": {
             
             "custom_model": model_type,
             
-            "post_fcnet_hiddens": [1600,512, 512,7],
+            "post_fcnet_hiddens": [1600,512,512,7],
             "post_fcnet_activation": "relu",
               
            
@@ -290,44 +295,6 @@ ray_config = {
         "create_env_on_driver":True,
     }
 
-ray_config_2 = {
-        "env": "atlatl",  # or "corridor" if registered above
-        "env_config": {
-            "role" :"blue",
-            "versusAI":"pass-agg", 
-            "scenario":"city-inf-5", 
-            "saveReplay":False, 
-            "actions19":False, 
-            "ai":"gym14", 
-            "verbose":False, 
-            #"scenarioSeed":4025, 
-            "scenarioCycle":0,
-        },
-        "disable_env_checking":True,
-        # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
-        "num_gpus": 0,
-        "model": {
-            
-            "custom_model": "Hex_CNN",
-            
-            "post_fcnet_hiddens": [1600,512, 512,7],
-            "post_fcnet_activation": "relu",
-              
-           
-            "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
-            "conv_activation"  : "relu",
-            "vf_share_layers" : True,
-
-        },
-        "num_workers": int(args.worker_num),  # parallelism
-        "framework": "torch",
-        "num_cpus_per_worker" : int(args.worker_cpu),
-        "num_cpus_for_driver": int(args.driver_cpu),
-        "ignore_worker_failures": True,
-        "create_env_on_driver":False,
-    }
-
-
 #get arguments
 args = parser.parse_args()
 
@@ -341,33 +308,55 @@ ModelCatalog.register_custom_model("Model_Vision", Model_Vision)
 ModelCatalog.register_custom_model("Navy_CNN", Navy_VisionNetwork)
 ModelCatalog.register_custom_model("Hex_CNN", Hex_CNN)
 
+print("Parallel Config:\n Workers: " + str(args.worker_num) + "\n  Worker CPU: " + str(args.worker_cpu) + "\n  Driver CPU: " + str(args.driver_cpu) + "\n  GPU: " + str(num_gpus) + "\n  Model: " + str(model_type) + "\n  Algo: " + str(algo))
+
 print("starting ray")
 
 total_cpu = int(args.worker_num) * int(args.worker_cpu) + int(args.driver_cpu)
 
-ray.init(num_cpus=total_cpu, num_gpus=1)
 
-print("hello world, I am now making the trainer!")
+ray.init(num_cpus=total_cpu, num_gpus=num_gpus)
+
 #make a ray tunner
 
 #algo development area
 #trainer = DQNTrainer(env="atlatl", config=ray_config)
-trainer = PPOTrainer(env="atlatl", config=ray_config)
+#trainer = PPOTrainer(env="atlatl", config=ray_config)
+if algo == "IMPALA":
+    trainer = ImpalaTrainer(env="atlatl", config=ray_config)
+elif algo == "PPO":
+    trainer = PPOTrainer(env="atlatl", config=ray_config)
+else:
+    print("No valid Algo was given")
 #config = trainer.get_config()
-#print(pretty_print(config))
 
-print("hello world, I am now going to start training!")
-
-##results = run_tune()
-#print(results)
-train_length = 750
-print("starting training!")
+train_length = 10000
 for _ in range(train_length):
     result = trainer.train()
-    print(pretty_print(result))
-    if _ % 100 == 0:
+    #print(pretty_print(result))
+    if _ % 500 == 0:
         checkpoint = trainer.save()
+    running_episodes = result["episodes_total"]
+    print("episodes_total: ", running_episodes)
+    if running_episodes > 5000000:
+        break
 checkpoint = trainer.save()
+
+
+
+#try to enable tunning for a ray trining run
+#make the impala config
+
+#from ray.rllib.algorithms.impala import ImpalaConfig
+#trainer_config = ImpalaConfig()
+#trainer_config = trainer_config.training(lr= 0.0005)
+#trainer_config.environment(env="atlatl", config=ray_config)
+#tune.run(
+#    "IMPALA",
+#    stop={"episodes_total" : 10000000 },
+#    config={trainer_config},
+#)
+
 
 #print(pretty_print(result))
 

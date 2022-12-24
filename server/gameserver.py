@@ -46,6 +46,13 @@ global util_blue_units
 
 
 
+from ray import tune
+from ray.tune import Callback
+from ray.air import session
+
+from ray.util.metrics import Counter, Gauge, Histogram
+
+
 class State(Enum):
     ROLE_ASSIGNMENT = 0
     FIRST_PLAYER_TURN = 1
@@ -101,6 +108,10 @@ def message_handler_factory(game_server):
             # go to new state
             if gs.game.is_terminal(gs.game_state):
                 gs.state = State.GAME_OVER
+                print(f'score {gs.game_state["status"]["score"]}',sep="")
+                #gs.gauge.set("score",gs.game_state["status"]["score"])
+                
+                session.report({"score": gs.game_state["status"]["score"]})
                 if gs.n_reps >= 0:  # gs.n_reps==-1 is used for Gym emulation
                     print(f'score {gs.game_state["status"]["score"]}')
                 gs.reps_done += 1
@@ -121,6 +132,8 @@ def message_handler_factory(game_server):
             # go to new state
             if gs.game.is_terminal(gs.game_state):
                 gs.state = State.GAME_OVER
+                print(f'score {gs.game_state["status"]["score"]}',sep="")
+                #gs.gauge.set(int(gs.game_state["status"]["score"]))
                 if gs.n_reps >= 0:  # gs.n_reps==-1 is used for Gym emulation
                     print(f'score {gs.game_state["status"]["score"]}')
                 gs.reps_done += 1
@@ -162,7 +175,12 @@ class GameServer:
         self.blue_logfile = None
         self.red_logfile = None
 
-
+        self.gauge = Gauge(
+            "curr_score",
+            description="Game Score for a game",
+            tag_keys=("score",),
+        )
+        self.gauge.set_default_tags({"score": "-999"})
 
 
         if blue_log:

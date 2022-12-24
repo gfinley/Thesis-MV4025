@@ -11,7 +11,7 @@ scenario_generator_registry = {
     "fog-inf-200" : (scenario.clear_square_factory, {'size':200, 'min_units':20, 'max_units':30, 'num_cities':0, 'max_phases':250, 'fog_of_war':True}),
 
     #ocean scenarios
-    "clear-navy-6" : (scenario_navy.clear_ocean_factory, {'size':6, 'min_units':1, 'max_units':2, 'max_phases':15}),
+    "clear-navy-6" : (scenario_navy.clear_ocean_factory, {'size':6, 'min_units':2, 'max_units':4, 'max_phases':15}),
     "island_small-6" : (scenario_navy.island_ocean_factory, {'size':6, "number_of_islands":4, 'min_units':1, 'max_units':3, 'max_phases':15}),
     "island_large-6" : (scenario_navy.island_large_ocean_factory, {'size':6, "number_of_islands":4, 'min_units':1, 'max_units':3, 'max_phases':15}),
     "blockade-6" : (scenario_navy.blockad_run_simple_factory, {'size':6, 'min_units':1, 'max_units':3, 'max_phases':15}),

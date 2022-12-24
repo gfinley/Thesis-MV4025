@@ -232,12 +232,11 @@ ray_config = {
             #"fcnet_activation": "relu",
               
             "custom_model": "my_model_3",
+            #nothing in this config matters
             "custom_model_config": {
                 "hiddens":"False",     
                 "conv_filters" : [[64,[6,6],1],[64,[6,6],1]],
                 "conv_activation"  : "relu",
-                "post_fcnet_hiddens" : [512, 512],
-                "post_fcnet_activation" : "relu",
                 "no_final_linear" : True,
                 "vf_share_layers" : True,
                 },
@@ -248,6 +247,10 @@ ray_config = {
         "num_cpus_per_worker" : int(args.worker_cpu),
         "num_cpus_for_driver": int(args.driver_cpu),
         "ignore_worker_failures": True,
+        "evaluation_num_workers": 0,
+        "evaluation_duration": 10,
+        "evaluation_duration_unit": "episodes",
+        "explore" : False,
     }
 
 
@@ -280,13 +283,13 @@ else:
 def run_tune():
     tune.Tuner(
     "DQN",
-    run_config=air.RunConfig(stop={"timesteps_total": 10000}),
+    run_config=air.RunConfig(stop={"timesteps_total": 1000000}),
     param_space={
         "env": "atlatl",
         "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
-            "scenario":"blockade-6", 
+            "scenario":"clear-navy-6", 
             "saveReplay":False, 
             "actions19":True, 
             "ai":"NAVY_SIMPLE", 
@@ -300,6 +303,13 @@ def run_tune():
         "model": {
             "custom_model": "my_model_3",  
         },
+        "custom_model_config": {
+                "hiddens":"False",     
+                "conv_filters" : [[64,[6,6],1],[64,[6,6],1]],
+                "conv_activation"  : "relu",
+                "no_final_linear" : True,
+                "vf_share_layers" : True,
+                },
             "num_workers": int(args.worker_num),  # parallelism
             "framework": "torch",
             "num_cpus_per_worker" : int(args.worker_cpu),
@@ -309,21 +319,21 @@ def run_tune():
                 ).fit()
     return 
 
-#results = run_tune()
-#print(results)
-train_length = 2500
+results = run_tune()
+print(results)
+#train_length = 500
 
-for _ in range(train_length):
-    result = algo.train()
-    print(pretty_print(result))
+#for _ in range(train_length):
+#    result = algo.train()
+#    print(pretty_print(result))
 
     
     
-run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+#run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
 
 #result = algo.evaluate()
 #print(pretty_print(result))
 
-algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"for_inference")
-torch.save(algo, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")
+#algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"for_inference")
+#torch.save(algo, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")

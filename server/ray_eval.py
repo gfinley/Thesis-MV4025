@@ -50,8 +50,15 @@ from ray.rllib.utils.framework import try_import_tf, try_import_torch
 from ray.tune.logger import pretty_print
 from ray import air, tune
 
+from ray.rllib.agents.impala import ImpalaTrainer
+
 #import for navy vision CNN testing
-from models import Navy_VisionNetwork,VisionNetwork_CNN,HEX_VisionNetwork
+from models import Navy_VisionNetwork,VisionNetwork_CNN,HEX_VisionNetwork,VisionNetwork
+
+from torchvision import models
+from torchsummary import summary
+
+from ray.util.metrics import Counter, Gauge, Histogram
 
 
 parser = argparse.ArgumentParser()
@@ -245,6 +252,47 @@ class Hex_CNN(TorchModelV2, nn.Module):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
 
 
+class Model_Vision(TorchModelV2, nn.Module):
+    """Example of a PyTorch custom model that just delegates to a fc-net."""
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        self.torch_sub_model = VisionNetwork(
+            obs_space, action_space, num_outputs, model_config, name
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        input_dict["obs"] = input_dict["obs"].float()
+        fc_out, _ = self.torch_sub_model(input_dict, state, seq_lens)
+        return fc_out, []
+
+    def value_function(self):
+        return torch.reshape(self.torch_sub_model.value_function(), [-1])
+
+class FC_NET(TorchModelV2, nn.Module):
+    """Example of a PyTorch custom model that just delegates to a fc-net."""
+
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        self.torch_sub_model = TorchFC(
+            obs_space, action_space, num_outputs, model_config, name
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        input_dict["obs"] = input_dict["obs"].float()
+        fc_out, _ = self.torch_sub_model(input_dict, state, seq_lens)
+        return fc_out, []
+
+    def value_function(self):
+        return torch.reshape(self.torch_sub_model.value_function(), [-1])
+
 
 #get arguments
 args = parser.parse_args()
@@ -255,20 +303,23 @@ ray_config = {
         "env_config": {
             "role" :"blue",
             "versusAI":"pass-agg", 
-            "scenario":"city-inf-5", 
-            "saveReplay":"0_HEX_REPLAY.js", 
+            "scenario":"city-inf-5",
+            #dont uncomment, does not work 
+            #"--blueReplay" : "Replay_Impala.js", 
             "actions19":False, 
             "ai":"gym14", 
             "verbose":False, 
             "scenarioSeed":4025, 
             "scenarioCycle":0,
+
+            #"saveReplay":"replay_defualt.js",
+
         },
 
         "disable_env_checking":True,
         # Use GPUs iff `RLLIB_NUM_GPUS` env var set to > 0.
-        "num_gpus": 1,
+        "num_gpus": 0,
         "model": {
-            
             "custom_model": "Hex_CNN",
             
             "post_fcnet_hiddens": [1600,512, 512,7],
@@ -280,19 +331,17 @@ ray_config = {
             "vf_share_layers" : True,
 
         },
-        "num_workers": 0,  # parallelism
+        "num_workers": 0,  # parallelism turned off for evaluation
         "framework": "torch",
         "num_cpus_per_worker" : 1,
         "num_cpus_for_driver": int(args.driver_cpu),
         "ignore_worker_failures": True,
         "create_env_on_driver":True,
         "evaluation_num_workers": 0,
-        "evaluation_duration": 1000,
+        "evaluation_duration": 100,
         "evaluation_interval": 1,
         "evaluation_duration_unit": "episodes",
         "explore" : False,
-        
-
     }
 
 
@@ -308,22 +357,36 @@ ModelCatalog.register_custom_model("my_model_2", TorchCustomModel_2)
 ModelCatalog.register_custom_model("my_model_3", TorchCustomModel_3)
 ModelCatalog.register_custom_model("my_model_4", TorchCustomModel_4)
 ModelCatalog.register_custom_model("Navy_CNN", Navy_VisionNetwork)
-
+ModelCatalog.register_custom_model("FC_NET", FC_NET)
 ModelCatalog.register_custom_model("Hex_CNN", Hex_CNN)
+ModelCatalog.register_custom_model("Model_Vision", Model_Vision)
 
 
 
-ray.init()
+ray.init(num_cpus=int(args.driver_cpu), num_gpus=0, log_to_driver=False)
 
 checkpoint = args.checkpoint
 #make a ray tunner
 
 
-restored_trainer = PPOTrainer(env="atlatl", config=ray_config)
+restored_trainer = ImpalaTrainer(env="atlatl", config=ray_config)
 restored_trainer.restore(checkpoint)
 
 #print(pretty_print(result))
 
-evaluation = restored_trainer.evaluate(checkpoint)
-print(pretty_print(evaluation))
+for i in range(0,100):
+    evaluation = restored_trainer.evaluate(checkpoint)
+    #print(pretty_print(evaluation))
+    rewards = evaluation['evaluation']['hist_stats']['episode_reward']
+    print(*rewards,sep=',')
+    restored_trainer = ImpalaTrainer(env="atlatl", config=ray_config)
+    restored_trainer.restore(checkpoint)
+
+#print()
+#print(pretty_print(evaluation))
+#policy = restored_trainer.get_policy()
+#print(policy)
+#model = policy.model
+#print(model)
+#summary(model, (14,5,5))
 
