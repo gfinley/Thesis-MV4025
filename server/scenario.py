@@ -14,6 +14,9 @@ global util_blue_units
 global util_game_Index
 
 
+import reporting
+from reporting import historian
+
 
 
 def from_file_factory(filename):
@@ -79,11 +82,13 @@ def clear_square_factory(size=6, min_units=2, max_units=4, num_cities=0, scenari
 
         #print("N :{}, Red:{}, Blue:{},".format(count+1,n_red,n_blue),end='')
                 #integration for Lab4
-        Lab4_util.assign_team_units2(unitData.unitIndex)
+        #Lab4_util.assign_team_units2(unitData.unitIndex)
 
         #initial uncertinty set to 1
-        Lab4_util.assign_initial_red_uncertinty(mapData)
-        Lab4_util.assign_initial_blue_uncertinty(mapData)
+        #Lab4_util.assign_initial_red_uncertinty(mapData)
+        #Lab4_util.assign_initial_blue_uncertinty(mapData)
+
+        #integration for historian
         
         
         for i in range(num_cities):
@@ -102,6 +107,7 @@ def clear_square_factory(size=6, min_units=2, max_units=4, num_cities=0, scenari
                 else:
                     city_loc = "ew-middle"
                 place_city(city_loc)  
+
         count = count + 1
         if scenarioCycle:
             count %= scenarioCycle
@@ -114,6 +120,18 @@ def clear_square_factory(size=6, min_units=2, max_units=4, num_cities=0, scenari
         scenario["map"]["fogOfWar"] = fog_of_war
         last_scenario = scenario
         util_game_Index = unitData.unitIndex
+        unitList =  list(unitData.unitIndex.items())
+        #parse the list
+        unitList_2 = []
+        for single_unit in unitList:
+            unitList_2.append([single_unit[0],single_unit[1].hex.x_offset,single_unit[1].hex.y_offset])
+        print(*unitList_2,sep=",")
+
+        #added for historian
+        historian.reset()
+        historian.add_mapData(mapData)
+        historian.add_unitData(unitData)
+        historian.render_start()
         return scenario
     return inner
 

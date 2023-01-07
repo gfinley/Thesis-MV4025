@@ -15,4 +15,9 @@ scenario_generator_registry = {
     "island_small-6" : (scenario_navy.island_ocean_factory, {'size':6, "number_of_islands":4, 'min_units':1, 'max_units':3, 'max_phases':15}),
     "island_large-6" : (scenario_navy.island_large_ocean_factory, {'size':6, "number_of_islands":4, 'min_units':1, 'max_units':3, 'max_phases':15}),
     "blockade-6" : (scenario_navy.blockad_run_simple_factory, {'size':6, 'min_units':1, 'max_units':3, 'max_phases':15}),
+
+
+    #size complexity experiments
+    "clear-inf-x" : (scenario.clear_square_factory, {'size':5, 'min_units':2, 'max_units':4}),
 }
+

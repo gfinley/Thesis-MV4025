@@ -12,7 +12,8 @@ import gym
 import map
 import numpy as np
 import ai.gym_ai_surrogate
-
+import reporting
+from reporting import historian
 
 class Args:
     def __init__(self, flag= False, scenario="plain2v1.scn", v=False, blueAI="passive", redAI="passive", blueNeuralNet=None, redNeuralNet=None, blueReplay=None, redReplay=None, openSocket=False, scenarioSeed=None, scenarioCycle=0, nReps=0):
@@ -33,6 +34,7 @@ class Args:
 class GymEnvironment:
     def __init__(self, role="blue", versusAI="passive", versusNeuralNet=None, scenario="city-inf-5", saveReplay=False, actions19=False, ai="gym14", openSocket=False, verbose=False, scenarioSeed=None, scenarioCycle=0):
         # ai should be one of: "gym", "gymx2", "gym12", "gym13", "gym14"
+        print(scenarioSeed)
         self.role = role
         if role=="red":
             redAI = ai
@@ -45,6 +47,9 @@ class GymEnvironment:
             blueAI = ai
             blueNeuralNet = None
         self.args = Args(blueAI=blueAI, redAI=redAI, blueNeuralNet=blueNeuralNet, redNeuralNet=redNeuralNet, scenario=scenario, v=verbose, openSocket=openSocket, scenarioSeed=scenarioSeed, scenarioCycle=scenarioCycle)
+        if saveReplay != False:
+            self.args = Args(blueAI=blueAI, redAI=redAI, blueReplay=saveReplay, blueNeuralNet=blueNeuralNet, redNeuralNet=redNeuralNet, scenario=scenario, v=verbose, openSocket=openSocket, scenarioSeed=scenarioSeed, scenarioCycle=scenarioCycle)
+            
         server.init(self.args)
         map_dim = server.mapDimensionBackdoor()
         if ai=="gymx2":
@@ -73,8 +78,13 @@ class GymEnvironment:
     def step(self, action):
         # Illegal action (off-map move attempt) should be converted to a no-op
         msg = server.getGymAI().actionMessageDiscrete(action)
+        
         if msg is not None:
             server.addMessageRunLoop(msg)
+            historian.handel_move(msg['action'])
+        #send message to historian
+
+
         return server.getGymAI().action_result()
 
 

@@ -38,6 +38,10 @@ import sys
 import signal
 import game_dispenser
 
+#import for making AAR
+import reporting
+from reporting import historian
+
 ##import for Lab4
 import Lab4_util
 
@@ -111,7 +115,7 @@ def message_handler_factory(game_server):
                 print(f'score {gs.game_state["status"]["score"]}',sep="")
                 #gs.gauge.set("score",gs.game_state["status"]["score"])
                 
-                session.report({"score": gs.game_state["status"]["score"]})
+                #session.report({"score": gs.game_state["status"]["score"]})
                 if gs.n_reps >= 0:  # gs.n_reps==-1 is used for Gym emulation
                     print(f'score {gs.game_state["status"]["score"]}')
                 gs.reps_done += 1
@@ -132,10 +136,14 @@ def message_handler_factory(game_server):
             # go to new state
             if gs.game.is_terminal(gs.game_state):
                 gs.state = State.GAME_OVER
+                #game is over render the game image and save it
+
+
                 print(f'score {gs.game_state["status"]["score"]}',sep="")
                 #gs.gauge.set(int(gs.game_state["status"]["score"]))
                 if gs.n_reps >= 0:  # gs.n_reps==-1 is used for Gym emulation
                     print(f'score {gs.game_state["status"]["score"]}')
+                    historian.process_game()
                 gs.reps_done += 1
                 if gs.n_reps>0 and gs.reps_done==gs.n_reps:
                     await do_exit(gs)
@@ -174,14 +182,6 @@ class GameServer:
         self.roleToClient = {}
         self.blue_logfile = None
         self.red_logfile = None
-
-        self.gauge = Gauge(
-            "curr_score",
-            description="Game Score for a game",
-            tag_keys=("score",),
-        )
-        self.gauge.set_default_tags({"score": "-999"})
-
 
         if blue_log:
             self.blue_logfile = open(blue_log,"w")

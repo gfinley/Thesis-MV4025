@@ -58,9 +58,26 @@ def init(args):
     if args.scenario[-4:]==".scn":
         scenario_generator = scenario.from_file_factory(args.scenario)
     else:
-        constructor, kwargs = scenario_generator_registry[args.scenario]
+        if "clear-inf-x" in args.scenario:
+            constructor, dull = scenario_generator_registry["clear-inf-x"]
+            #this is a custom scenario generator
+            #get the 4th part of the city-inf-x-5
+            size = int(args.scenario.split("-")[3])
+            #defualt arrangments
+            #kwargs = {'size':5, 'min_units':2, 'max_units':4}
+            #modify for the custom game
+            min_units = int(size/3)
+            max_units = int(size/2)
+            max_phases = int(int(size*.75) + int(size ))
+            kwargs = {'size':size, 'min_units':max_units, 'max_units':max_units, 'max_phases':max_phases}
+            #MAGIC PRINT
+            #print("Custom game size is: ", size, " min_units: ", min_units, " max_units: ", max_units, " max_phases: ", max_phases)
+        else:
+            constructor, kwargs = scenario_generator_registry[args.scenario]
+
         if args.scenarioSeed:
             kwargs['scenarioSeed'] = args.scenarioSeed
+            print("IN SERVER: scenarioSeed", args.scenarioSeed)
         if args.scenarioCycle:
             kwargs['scenarioCycle'] = args.scenarioCycle
         scenario_generator = constructor(**kwargs)

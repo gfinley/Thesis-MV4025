@@ -3,12 +3,16 @@ import map
 
 
 ##TOGGLE FOR NAVY COMBAT UNITS VS ATLATL VANILLA UNITS
-#import combat <---atlatl vanilla
-#import mobility <--atlatl vanilla
+import combat #<---atlatl vanilla
+import mobility #<--atlatl vanilla
 
-import combat_navy as combat
-import mobility_navy as mobility
+#import combat_navy as combat
+#import mobility_navy as mobility
 from random import random
+
+
+#add historian functionality
+
 
 class UnitData:
     def __init__(self):

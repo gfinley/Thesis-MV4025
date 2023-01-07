@@ -58,6 +58,8 @@ def clear_ocean_factory(size=6, min_units=1, max_units=3, num_cities=0, scenario
         unitData = unit.UnitData()
         def _add_units(faction,start_hexes):
             n = random.randint(min_units,max_units)
+            if faction=="red":
+                n = 1
             for i in range(n):
                 hex = random.choice(start_hexes)
                 start_hexes.remove(hex)

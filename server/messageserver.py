@@ -30,6 +30,9 @@ import websockets
 import signal
 import sys
 
+import reporting
+from reporting import historian
+
 SLEEP_TIME = 0.0
 
 def signal_handler(sig, frame):
@@ -54,6 +57,8 @@ class ClientWrapper:
         else: # self.type == "function"
             returned_message_S = self.client(message_S, response_fn=self.send_to_server)
             if returned_message_S: # Checking to make sure it's not None
+                # hISTORIAN HANDEL
+                #historian.handel_move(returned_message_S)
                 self.from_client.append( json.loads(returned_message_S) ) # Invoke the function
     def send_to_server(self, message_O): # For sending messages that are not in response to a message
         if type(message_O)!=type({}):

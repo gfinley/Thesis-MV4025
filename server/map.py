@@ -1,6 +1,9 @@
 import math
 import json
 
+
+#add historian functionality
+
 class MapData:
     def __init__(self):
         self.edgeIndex = {}  # Values are indexes into map.edges

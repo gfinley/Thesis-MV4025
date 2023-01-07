@@ -338,7 +338,7 @@ ray_config = {
         "ignore_worker_failures": True,
         "create_env_on_driver":True,
         "evaluation_num_workers": 0,
-        "evaluation_duration": 100,
+        "evaluation_duration": 10,
         "evaluation_interval": 1,
         "evaluation_duration_unit": "episodes",
         "explore" : False,
@@ -374,7 +374,7 @@ restored_trainer.restore(checkpoint)
 
 #print(pretty_print(result))
 
-for i in range(0,100):
+for i in range(0,2):
     evaluation = restored_trainer.evaluate(checkpoint)
     #print(pretty_print(evaluation))
     rewards = evaluation['evaluation']['hist_stats']['episode_reward']
