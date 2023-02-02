@@ -6,15 +6,15 @@ cost = {}
 
 #navy units mobility cost
 cost["destroyer"] = {
-    "ocean": 100,
+    "ocean": 50,
     "land": Infinity,
 }
 cost["submarine"] = {
-    "ocean": 100,
+    "ocean": 50,
     "land": Infinity,
 }
 cost["transport"] = {
-    "ocean": 100,
+    "ocean": 50,
     "land": Infinity,
 }
 

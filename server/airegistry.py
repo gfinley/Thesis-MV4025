@@ -63,8 +63,6 @@ if IMPORT_NEURAL:
 
     ai_registry["Ray_ai_test"] = (ai.neural_ray.AI14, {"neuralNet":"direct", "dqn":False, "doubledCoordinates":False})
     ai_registry["Navy"] = (ai.neural_ray.NAVY_SIMPLE, {"neuralNet":"ai/model.pt", "dqn":False, "doubledCoordinates":False})
-     
-
-
+    ai_registry["azure_14"] = (ai.neural.AI_Azure, {"neuralNet":"None", "dqn":False, "azure":True, "doubledCoordinates":False})
     
 

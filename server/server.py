@@ -99,6 +99,8 @@ def getGymAI():
 def reset():
     #addMessageRunLoop({"type":"reset-request"})
     addMessageRunLoop({"type":"next-game-request"})
+    #tell the historian to save the game
+    
     return getGymAI().observation()
 
 def addMessageRunLoop(messageO):

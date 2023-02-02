@@ -70,6 +70,7 @@ class GymEnvironment:
         self.metadata = {'render.modes': ['human']}
         self.reward_range = (-np.inf, np.inf)
     def reset(self):
+        historian.process_game()
         return server.reset()
     def close(self):
         pass
@@ -86,5 +87,3 @@ class GymEnvironment:
 
 
         return server.getGymAI().action_result()
-
-

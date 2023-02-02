@@ -5,6 +5,14 @@ import argparse
 import numpy as np
 
 
+#azure imports
+import urllib.request
+import json
+import os
+import ssl
+import time
+#end azure imports
+
 from stable_baselines3 import PPO, DQN
 
 # This AI has a representation of the map and units, and updates the unit representation as it changes
@@ -43,7 +51,10 @@ class AI:
         else:
             neural_net_file = default_neural_net_file
         self.dqn = kwargs["dqn"]
-        if self.dqn:
+        self.azure = kwargs["azure"]
+        if self.azure:
+            self.model = None
+        elif self.dqn:
             self.model = DQN.load(neural_net_file)
         else:
             self.model = PPO.load(neural_net_file)
@@ -318,6 +329,95 @@ class AI14(AI):
         return 14
 
 
+class AI_Azure(AI):
+    def __init__(self, role, kwargs):
+        AI.__init__(self, role, kwargs)
+    def observation(self):
+        next_mover = self.nextMover()
+        legal_move_hexes = self.legalMoveHexes(next_mover)
+        phase_indicator = 0.9**self.phaseCount
+        return np.stack( [
+                            self.feature(moverFeatureFactory(next_mover),"unit"),
+                            self.feature(canMoveFeature,"unit"),
+                            self.feature(legalMoveFeatureFactory(legal_move_hexes),"hex"),
+                            self.feature(blueUnitFeature,"unit"), 
+                            self.feature(redUnitFeature,"unit"),
+                            self.feature(unitTypeFeatureFactory("infantry"),"unit"),
+                            self.feature(unitTypeFeatureFactory("mechinf"),"unit"),
+                            self.feature(unitTypeFeatureFactory("armor"),"unit"),
+                            self.feature(unitTypeFeatureFactory("artillery"),"unit"),
+                            self.feature(terrainFeatureFactory("clear"),"hex"),
+                            self.feature(terrainFeatureFactory("water"),"hex"),
+                            self.feature(terrainFeatureFactory("rough"),"hex"),
+                            self.feature(terrainFeatureFactory("urban"),"hex"),
+                            self.feature(constantFeatureFactory(phase_indicator),"hex")
+                         ] )
+    def legalMoveHexes(self, mover):
+        result = {}
+        if mover:
+            fireTargets = mover.findFireTargets(self.unitData)
+            for unt in fireTargets:
+                result[unt.hex.id] = True
+            moveTargets = mover.findMoveTargets(self.mapData, self.unitData)
+            for hex in moveTargets:
+                result[hex.id] = True
+        return result
+    def getNFeatures(self):
+        return 14
+    def moveMessage(self):
+        while self.nextMover():
+            debugPrint(f"processing next mover {self.nextMover().uniqueId}")
+
+            #Do azure call here
+            def allowSelfSignedHttps(allowed):
+            # bypass the server certificate verification on client side
+                if allowed and not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
+                    ssl._create_default_https_context = ssl._create_unverified_context
+
+            allowSelfSignedHttps(True) # this line is needed if you use self-signed certificate in your scoring service.
+
+            # Request data goes here
+            # The example below assumes JSON formatting which may be updated
+            # depending on the format your endpoint expects.
+            # More information can be found here:
+            # https://docs.microsoft.com/azure/machine-learning/how-to-deploy-advanced-entry-script
+
+
+
+            url = 'https://seawolf-parallel-minimal.westus.inference.ml.azure.com/score'
+            # Replace this with the primary/secondary key or AMLToken for the endpoint
+            api_key = 'JeycB1o8XyqFZjp0NAh600LN7Bdh3Sb8'
+            if not api_key:
+                raise Exception("A key should be provided to invoke the endpoint")
+
+            # The azureml-model-deployment header will force the request to go to a specific deployment.
+            # Remove this header to have the request observe the endpoint traffic rules
+            headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key), 'azureml-model-deployment': 'default' }
+
+
+            data  = {"data": self.observation().tolist()}            
+
+            body = str.encode(json.dumps(data))
+            req = urllib.request.Request(url, body, headers)
+            try:
+                response = urllib.request.urlopen(req)
+                result = int(response.read())
+                print(result)
+            except urllib.error.HTTPError as error:
+                print("The request failed with status code: " + str(error.code))
+                result = -1
+                # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
+                print(error.info())
+                print(error.read().decode("utf8", 'ignore'))
+
+            action  = result
+            msg = self.actionMessageDiscrete(action)
+            if msg != None:
+                return msg
+            # No next mover
+            return { "type":"action", "action":{"type":"pass"} }
+
+#old
 class AI15(AI):
     def __init__(self, role, kwargs):
         AI.__init__(self, role, kwargs)
@@ -375,6 +475,7 @@ class AI15(AI):
     def getNFeatures(self):
         return 15
 
+#old
 class AI_RAY(AI):
     def __init__(self, role, kwargs):
         AI.__init__(self, role, kwargs)
@@ -469,6 +570,11 @@ class AI_RAY(AI):
     def getNFeatures(self):
         return 1
 
+
+
+
+
+#old
 class NAVY_SIMPLE(AI):
     def __init__(self, role, kwargs):
         AI.__init__(self, role, kwargs)

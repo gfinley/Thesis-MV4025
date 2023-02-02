@@ -122,10 +122,10 @@ def clear_square_factory(size=6, min_units=2, max_units=4, num_cities=0, scenari
         util_game_Index = unitData.unitIndex
         unitList =  list(unitData.unitIndex.items())
         #parse the list
-        unitList_2 = []
-        for single_unit in unitList:
-            unitList_2.append([single_unit[0],single_unit[1].hex.x_offset,single_unit[1].hex.y_offset])
-        print(*unitList_2,sep=",")
+        #unitList_2 = []
+        #for single_unit in unitList:
+        #    unitList_2.append([single_unit[0],single_unit[1].hex.x_offset,single_unit[1].hex.y_offset])
+        #print(*unitList_2,sep=",")
 
         #added for historian
         historian.reset()

@@ -11,7 +11,7 @@ import mobility #<--atlatl vanilla
 from random import random
 
 
-#add historian functionality
+from reporting import historian
 
 
 class UnitData:
@@ -43,6 +43,7 @@ class UnitData:
                 unitD['hex'] = "fog"
             unitD['detected'] = unit.detected
             result.append(unitD)
+        historian.handle_unit_to_portable(result)
         return result
     def updateDetectionStatus(self):
         units = self.units()

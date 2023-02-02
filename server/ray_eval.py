@@ -10,10 +10,10 @@ from ray.rllib.algorithms.simple_q.simple_q import (
     SimpleQ,
     SimpleQConfig,
 )
-from ray.rllib.algorithms.dqn import dqn
-from ray.rllib.algorithms.dqn.dqn import DQNConfig
-from ray.rllib.agents.dqn import DQNTrainer
-from ray.rllib.agents.ppo import PPOTrainer
+#from ray.rllib.algorithms.dqn import dqn
+#from ray.rllib.algorithms.dqn.dqn import DQNConfig
+#from ray.rllib.agents.dqn import DQNTrainer
+#from ray.rllib.agents.ppo import PPOTrainer
 
 import datetime
 import ray
@@ -49,8 +49,7 @@ from ray.rllib.models.torch.fcnet import FullyConnectedNetwork as TorchFC
 from ray.rllib.utils.framework import try_import_tf, try_import_torch
 from ray.tune.logger import pretty_print
 from ray import air, tune
-
-from ray.rllib.agents.impala import ImpalaTrainer
+from ray.rllib.algorithms.impala import ImpalaConfig
 
 #import for navy vision CNN testing
 from models import Navy_VisionNetwork,VisionNetwork_CNN,HEX_VisionNetwork,VisionNetwork
@@ -344,8 +343,30 @@ ray_config = {
         "explore" : False,
     }
 
+env_config_settings = {
+            "role" :"blue",
+            "versusAI":"azure_14", 
+            "scenario":"city-inf-5",
+            "saveReplay":False, 
+            "actions19":False, 
+            "ai":"gym14", 
+            "verbose":False, 
+            "scenarioSeed":4025, 
+            "scenarioCycle":0,
+        }
+model_config = {   
+            "custom_model": "Hex_CNN",
+            
+            "post_fcnet_hiddens": [1600,512,512,7],
+            "post_fcnet_activation": "relu",
+              
+           
+            #"conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+            "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+            "conv_activation"  : "relu",
+            "vf_share_layers" : True,
 
-
+        }
 #get arguments
 args = parser.parse_args()
 
@@ -369,18 +390,64 @@ checkpoint = args.checkpoint
 #make a ray tunner
 
 
-restored_trainer = ImpalaTrainer(env="atlatl", config=ray_config)
-restored_trainer.restore(checkpoint)
+#restored_trainer = ImpalaConfig(env="atlatl", config=ray_config)
+
+restored_trainer = ImpalaConfig()
+restored_trainer = restored_trainer.environment(env="atlatl", env_config=env_config_settings)
+restored_trainer = restored_trainer.environment(disable_env_checking=True)
+
+#set the model to be the custom Hex_cnn
+restored_trainer = restored_trainer.training(model=model_config)
+
+restored_trainer = restored_trainer.rollouts(num_rollout_workers=0)
+restored_trainer = restored_trainer.framework("torch")
+
+restored_trainer = restored_trainer.rollouts(create_env_on_local_worker=True)
+
+restored_trainer = restored_trainer.resources(num_cpus_per_worker=1)
+restored_trainer = restored_trainer.resources(num_gpus=0)
+#trainer_config = trainer_config.resources(num_gpus=num_gpus_to_use)
+restored_trainer = restored_trainer.resources(num_cpus_for_local_worker=int(args.driver_cpu))
+
+restored_trainer = restored_trainer.evaluation(evaluation_interval = 1)
+restored_trainer = restored_trainer.evaluation(evaluation_duration = 10)
+restored_trainer = restored_trainer.evaluation(evaluation_duration_unit= "episodes")
+
+#self.evaluation_num_workers = 0
+restored_trainer = restored_trainer.evaluation(evaluation_num_workers = 0)
+
+#restored_trainer.restore(checkpoint)
 
 #print(pretty_print(result))
 
+#make te algo
+
+algo = restored_trainer.build()
+
+algo.restore(checkpoint)
+reward_array = []
+#ray eval, inline with ray train v3
 for i in range(0,2):
-    evaluation = restored_trainer.evaluate(checkpoint)
-    #print(pretty_print(evaluation))
+    evaluation = algo.evaluate()
     rewards = evaluation['evaluation']['hist_stats']['episode_reward']
-    print(*rewards,sep=',')
-    restored_trainer = ImpalaTrainer(env="atlatl", config=ray_config)
-    restored_trainer.restore(checkpoint)
+    reward_array.append(rewards)
+    #print(*rewards,sep=',')
+    #dont think this rebuild is needed, only the restore.
+    #algo = restored_trainer.build()
+    algo.restore(checkpoint)
+algo.restore(checkpoint)
+
+print(reward_array)
+
+
+#old rev 2 ray
+#for i in range(0,2):
+#    evaluation = restored_trainer.evaluate(checkpoint)
+#    #print(pretty_print(evaluation))
+#    rewards = evaluation['evaluation']['hist_stats']['episode_reward']
+#    print(*rewards,sep=',')
+#    restored_trainer = ImpalaConfig(env="atlatl", config=ray_config)
+#    restored_trainer.restore(checkpoint)
 
 #print()
 #print(pretty_print(evaluation))

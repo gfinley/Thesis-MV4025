@@ -120,7 +120,6 @@ class MyCNN(BaseFeaturesExtractor):
         #print("--------------Here are the observations--------------------")
         #print(observations[4])
         return self.linear(self.cnn(observations))
-
 class FC_NET(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
 
@@ -141,7 +140,6 @@ class FC_NET(TorchModelV2, nn.Module):
 
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
-
 class TorchCustomModel_2(TorchModelV2, nn.Module):
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
         TorchModelV2.__init__(
@@ -185,8 +183,6 @@ class TorchCustomModel_2(TorchModelV2, nn.Module):
 
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
-
-
 class TorchCustomModel_3(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
@@ -295,7 +291,7 @@ from ray.tune.logger.logger import Logger, LoggerCallback
 
 env_config_settings = {
             "role" :"blue",
-            "versusAI":"pass-agg", 
+            "versusAI":"azure_14", 
             "scenario":scn, 
             "saveReplay":False, 
             "actions19":False, 
@@ -362,7 +358,7 @@ trainer_config = trainer_config.environment(disable_env_checking=True)
 #set the model to be the custom Hex_cnn
 trainer_config = trainer_config.training(model=model_config)
 
-enable_hypersearch = True
+enable_hypersearch = False
 if enable_hypersearch == True: #enable hyperparam tuning
     trainer_config = trainer_config.training(
         lr=tune.grid_search([0.0001, 0.0003]), 
@@ -386,8 +382,6 @@ trainer_config = trainer_config.framework("torch")
 trainer_config = trainer_config.rollouts(create_env_on_local_worker=False)
 #ignore worker failures
 trainer_config = trainer_config.rollouts(ignore_worker_failures=True)
-
-
 #tune.run(
 #    "IMPALA",
 #    stop={"episodes_total" : 100000 },
@@ -437,7 +431,7 @@ tuner = tune.Tuner(
         name=run_name,
         log_to_file=True,
         checkpoint_config=air.CheckpointConfig(
-            checkpoint_frequency = 250,
+            checkpoint_frequency = 1000,
             checkpoint_at_end = True
         )
     )

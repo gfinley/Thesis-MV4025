@@ -10,6 +10,13 @@ import unit
 
 action_count = 0
 
+#azure imports
+import urllib.request
+import json
+import os
+import ssl
+import time
+#end azure imports
 
 #lab4 utils import
 import Lab4_util
@@ -459,6 +466,7 @@ class AI15(AI):
         return 15
 
 
+
 class AI_RAY(AI):
     def __init__(self, role, kwargs):
         AI.__init__(self, role, kwargs)
@@ -589,8 +597,6 @@ class NAVY_SIMPLE(AI):
         return result
     def getNFeatures(self):
         return 12
-
-
 
 async def client(ai, uri):
     async with websockets.connect(uri) as websocket:

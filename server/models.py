@@ -775,7 +775,7 @@ class HEX_VisionNetwork(TorchModelV2, nn.Module):
                     layers.append(nn.Flatten())
                     #add the flatten size here to allow the flatten to flow into the FC layers
                     # MAGIC NUMBER
-                    in_size = 1600
+                    in_size = 64*w*h
                     # Add (optional) post-fc-stack after last Conv2D layer.
                     for i, out_size in enumerate(post_fcnet_hiddens + [num_outputs]):
                         layers.append(
