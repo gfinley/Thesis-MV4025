@@ -1,20 +1,22 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH --mem-per-cpu=2G
-#SBATCH --cpus-per-task=50
-#SBATCH --output=ai_trace_%j.txt
+#SBATCH --output=0_bayesian_test_%j.txt
 #SBATCH --time=15-23:00:00
+
+
+
+
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=matthew.finley@nps.edu
 
+#for running training
+python ray_run_3.py --name $5 --worker_num $1 --worker_cpu $2 --driver_cpu $3 --algo $4 --model $6 --gpu $7
 
 
 
+#FOR EVALUATION
+#python ray_eval.py --checkpoint /home/matthew.finley/Thesis-MV4025/3_IMPALA_parallel_gpu/IMPALA_30_1_8__gpu_5M/IMPALA_atlatl_a4f67_00000_0_2023-01-08_15-17-39/checkpoint_000177 --driver_cpu 10
 
-
-#python server.py city-inf-5 --blueAI Lab3_dqn-v3_500000_0 --redAI pass-agg --nReps 25000 > Data/data_Lab3_dqn-v3_500K_0.txt
-#python server.py city-inf-5 --blueAI Lab3_dqn-v3_2000000_0 --redAI pass-agg --nReps 25000 > Data/data_Lab3_dqn-v3_2M_0.txt
-
-python ray_run.py --name $5 --worker_num $1 --worker_cpu $2 --driver_cpu $3 --algo $4
-
-#python train-navy.py --model mod_1 --length 200000
+#for infrence
+#python ray_infrence_test.py

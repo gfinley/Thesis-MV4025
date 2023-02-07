@@ -53,7 +53,7 @@ from ray.tune.logger import pretty_print
 from ray import air, tune
 
 #import for navy vision CNN testing
-from models import Navy_VisionNetwork,VisionNetwork_CNN,VisionNetwork,HEX_VisionNetwork
+from models import Navy_VisionNetwork,VisionNetwork_CNN,VisionNetwork,HEX_VisionNetwork,Baysian_network
 
 
 parser = argparse.ArgumentParser()
@@ -222,6 +222,28 @@ class Model_Vision(TorchModelV2, nn.Module):
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
 
+
+class Model_bayesian(TorchModelV2, nn.Module):
+    """Example of a PyTorch custom model that just delegates to a fc-net."""
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        self.torch_sub_model = Baysian_network(
+            obs_space, action_space, num_outputs, model_config, name
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        input_dict["obs"] = input_dict["obs"].float()
+        fc_out, _ = self.torch_sub_model(input_dict, state, seq_lens)
+        return fc_out, []
+
+    def value_function(self):
+        return torch.reshape(self.torch_sub_model.value_function(), [-1])
+
+
 class Hex_CNN(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
@@ -271,6 +293,7 @@ ModelCatalog.register_custom_model("my_model_2", TorchCustomModel_2)
 ModelCatalog.register_custom_model("my_model_3", TorchCustomModel_3)
 ModelCatalog.register_custom_model("Model_Vision", Model_Vision)
 ModelCatalog.register_custom_model("Navy_CNN", Navy_VisionNetwork)
+ModelCatalog.register_custom_model("Model_bayesian", Model_bayesian)
 
 #this is the one that works well, is still a small CNN
 ModelCatalog.register_custom_model("Hex_CNN", Hex_CNN)
@@ -291,7 +314,7 @@ from ray.tune.logger.logger import Logger, LoggerCallback
 
 env_config_settings = {
             "role" :"blue",
-            "versusAI":"azure_14", 
+            "versusAI":"pass-agg", 
             "scenario":scn, 
             "saveReplay":False, 
             "actions19":False, 
@@ -382,15 +405,7 @@ trainer_config = trainer_config.framework("torch")
 trainer_config = trainer_config.rollouts(create_env_on_local_worker=False)
 #ignore worker failures
 trainer_config = trainer_config.rollouts(ignore_worker_failures=True)
-#tune.run(
-#    "IMPALA",
-#    stop={"episodes_total" : 100000 },
-#    config=trainer_config.to_dict(),
-#    local_dir="/home/matthew.finley/Thesis-MV4025/server/Tune_Test",
-#    name="Tune_Test",
-#    checkpoint_freq=100,
-#    checkpoint_at_end=True,
-#)
+
 
 #make a stopper for max iterations
 from ray.tune import stopper
@@ -405,8 +420,6 @@ def stopper_episodes(trial_id, result):
 #timesteps_total stopper
 def stopper_timesteps_5000000(trial_id, result):
     return result["timesteps_total"] > 5000000
-
-
 
 
 #run name is conctnation of algo, worker num, and worker cpu and ig gpu is used then _gpu is added
@@ -431,7 +444,7 @@ tuner = tune.Tuner(
         name=run_name,
         log_to_file=True,
         checkpoint_config=air.CheckpointConfig(
-            checkpoint_frequency = 1000,
+            checkpoint_frequency = 100,
             checkpoint_at_end = True
         )
     )
@@ -450,12 +463,3 @@ results = tuner.fit()
 #model = policy.model
 #run_name = "{}_{}_{}_{}".format(args.algo, args.name,train_length,datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 #torch.save(policy, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")    
-    
-
-
-
-#result = algo.evaluate()
-#print(pretty_print(result))
-
-#algo.export_policy_model("/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"for_inference")
-#torch.save(algo, "/home/matthew.finley/Thesis-MV4025/server/ray_models/"+run_name+"_state")
