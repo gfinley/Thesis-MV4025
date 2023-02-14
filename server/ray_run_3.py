@@ -53,7 +53,7 @@ from ray.tune.logger import pretty_print
 from ray import air, tune
 
 #import for navy vision CNN testing
-from models import Navy_VisionNetwork,VisionNetwork_CNN,VisionNetwork,HEX_VisionNetwork,Baysian_network
+from models import Navy_VisionNetwork,VisionNetwork_CNN,VisionNetwork,HEX_VisionNetwork,Baysian_network,dev_model,dev_model_with_cnn
 
 
 parser = argparse.ArgumentParser()
@@ -202,6 +202,7 @@ class TorchCustomModel_3(TorchModelV2, nn.Module):
 
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
+
 class Model_Vision(TorchModelV2, nn.Module):
     """Example of a PyTorch custom model that just delegates to a fc-net."""
     def __init__(self, obs_space, action_space, num_outputs, model_config, name):
@@ -264,6 +265,47 @@ class Hex_CNN(TorchModelV2, nn.Module):
     def value_function(self):
         return torch.reshape(self.torch_sub_model.value_function(), [-1])
 
+class dev_net(TorchModelV2, nn.Module):
+    """Example of a PyTorch custom model that just delegates to a fc-net."""
+
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        self.torch_sub_model = dev_model(
+            obs_space, action_space, num_outputs, model_config, name
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        input_dict["obs"] = input_dict["obs"].float()
+        fc_out, _ = self.torch_sub_model(input_dict, state, seq_lens)
+        return fc_out, []
+
+    def value_function(self):
+        return torch.reshape(self.torch_sub_model.value_function(), [-1])
+
+class dev_net_with_cnn(TorchModelV2, nn.Module):
+    """Example of a PyTorch custom model that just delegates to a fc-net."""
+
+    def __init__(self, obs_space, action_space, num_outputs, model_config, name):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        self.torch_sub_model = dev_model_with_cnn(
+            obs_space, action_space, num_outputs, model_config, name
+        )
+
+    def forward(self, input_dict, state, seq_lens):
+        input_dict["obs"] = input_dict["obs"].float()
+        fc_out, _ = self.torch_sub_model(input_dict, state, seq_lens)
+        return fc_out, []
+
+    def value_function(self):
+        return torch.reshape(self.torch_sub_model.value_function(), [-1])
 
 
 #get arguments
@@ -298,6 +340,9 @@ ModelCatalog.register_custom_model("Model_bayesian", Model_bayesian)
 #this is the one that works well, is still a small CNN
 ModelCatalog.register_custom_model("Hex_CNN", Hex_CNN)
 
+ModelCatalog.register_custom_model("dev_net", dev_net)
+ModelCatalog.register_custom_model("dev_net_with_cnn", dev_net_with_cnn)
+
 print("starting ray")
 
 total_cpu = int(args.worker_num) * int(args.worker_cpu) + int(args.driver_cpu)
@@ -306,8 +351,6 @@ total_cpu = int(args.worker_num) * int(args.worker_cpu) + int(args.driver_cpu)
 ray.init(num_cpus=total_cpu, num_gpus=num_gpus_to_use)
 
 from ray.tune.logger.logger import Logger, LoggerCallback
-
-
 
 #try to enable tunning for a ray trining run
 #make the impala config
@@ -324,20 +367,24 @@ env_config_settings = {
             "scenarioCycle":0,
         }
 
-
 model_config = {   
             "custom_model": model_type,
             
-            "post_fcnet_hiddens": [1600,512,512,7],
-            "post_fcnet_activation": "relu",
-              
-           
-            #"conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
-            "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
-            "conv_activation"  : "relu",
+            "fcnet_hiddens": [1600,512,512,7],
+            "fcnet_activation": "relu",
             "vf_share_layers" : True,
-
         }
+#saved old std config
+#            "custom_model": model_type,
+#            
+#            "post_fcnet_hiddens": [1600,512,512,7],
+#            "post_fcnet_activation": "relu",
+#              
+#           
+#            #"conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+#            "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+#            "conv_activation"  : "relu",
+#            "vf_share_layers" : True,
 
 
 from ray.rllib.algorithms.impala import ImpalaConfig
@@ -345,7 +392,6 @@ if algo == "IMPALA":
     trainer_config = ImpalaConfig()
 if algo == "PPO":
     trainer_config = PPOConfig()
-
 
 #import the following algorithms , A3C, APPO, DDPG, DQN, ES, IMPALA, PPO, SAC, TD3
 from ray.rllib.algorithms.a3c import A3CConfig
@@ -371,6 +417,18 @@ if algo == "SAC":
     trainer_config = SACConfig()
 if algo == "AlphaZero":
     trainer_config = AlphaZeroConfig()
+    model_config = {   
+           "custom_model": model_type,
+           
+           "post_fcnet_hiddens": [1600,512,512,7],
+           "post_fcnet_activation": "relu",
+             
+          
+           #"conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+           "conv_filters" : [[64,[1,1],1],[64,[1,1],1]],
+           "conv_activation"  : "relu",
+           "vf_share_layers" : True,
+        }
 if algo == "TD3":
     trainer_config = TD3Config()
 
@@ -381,12 +439,7 @@ trainer_config = trainer_config.environment(disable_env_checking=True)
 #set the model to be the custom Hex_cnn
 trainer_config = trainer_config.training(model=model_config)
 
-enable_hypersearch = False
-if enable_hypersearch == True: #enable hyperparam tuning
-    trainer_config = trainer_config.training(
-        lr=tune.grid_search([0.0001, 0.0003]), 
-        train_batch_size=tune.grid_search([1000, 2000]),
-    )
+
 
 #set config jobs cpu and gpu resorces
 trainer_config = trainer_config.resources(num_cpus_per_worker=1)
@@ -402,9 +455,11 @@ trainer_config = trainer_config.rollouts(num_envs_per_worker=1)
 trainer_config = trainer_config.framework("torch")
 
 #create env on local worker
-trainer_config = trainer_config.rollouts(create_env_on_local_worker=False)
+trainer_config = trainer_config.rollouts(create_env_on_local_worker=True)
 #ignore worker failures
 trainer_config = trainer_config.rollouts(ignore_worker_failures=True)
+
+#set the number of concurent experiments
 
 
 #make a stopper for max iterations
@@ -416,6 +471,9 @@ from ray.tune.stopper import MaximumIterationStopper, FunctionStopper
 
 def stopper_episodes(trial_id, result):
     return result["episodes_total"] > 5000000
+
+def stopper_episodes_500K(trial_id, result):
+    return result["episodes_total"] > 500000
 
 #timesteps_total stopper
 def stopper_timesteps_5000000(trial_id, result):
@@ -430,26 +488,31 @@ def gpu_check(gpu):
         return "_gpu"
 
 
-run_name = str(algo)+ "_" + str(args.worker_num) + "_" + str(args.worker_cpu) + "_" + str(args.driver_cpu) + "_" + gpu_check(num_gpus_to_use) + "_5M"
+enable_hypersearch = True
+if enable_hypersearch == True: #enable hyperparam tuning
+    trainer_config = trainer_config.training(
+        lr=tune.grid_search([0.0001, 0.0005,0.001,0.005,0.01]), 
+        #train_batch_size=tune.grid_search([1000, 2000]),
+    )
+
+run_name = str(algo)+ "_" + model_type + "_" + str(args.worker_num) + "_" + str(args.worker_cpu) + "_" + str(args.driver_cpu) + "_" + gpu_check(num_gpus_to_use) + "_5M"
 
 experiment_dir = "/home/matthew.finley/Thesis-MV4025/" + str(experiment_name)
 
 tuner = tune.Tuner(    
     algo,
     param_space=trainer_config.to_dict(),
-
     run_config=air.RunConfig(
-        stop=stopper_timesteps_5000000,
+        stop=stopper_episodes_500K,
         local_dir=experiment_dir, 
         name=run_name,
         log_to_file=True,
         checkpoint_config=air.CheckpointConfig(
-            checkpoint_frequency = 100,
+            checkpoint_frequency = 50,
             checkpoint_at_end = True
-        )
+        ) 
     )
 )
-
 
 results = tuner.fit()
 

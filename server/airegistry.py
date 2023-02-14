@@ -66,3 +66,6 @@ if IMPORT_NEURAL:
     ai_registry["azure_14"] = (ai.neural.AI_Azure, {"neuralNet":"None", "dqn":False, "azure":True, "doubledCoordinates":False})
     
 
+    #make Alphazero registry
+    ai_registry["alphazero"] = (ai.neural.Alphazero, {"neuralNet":"None", "dqn":False, "azure":True, "doubledCoordinates":False})
+

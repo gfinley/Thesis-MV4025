@@ -71,8 +71,8 @@
 #sbatch training_run.sh 25 1 8 IMPALA IMPALA_parallel_00_GPU Hex_CNN
 #sbatch training_run.sh 30 1 8 IMPALA IMPALA_parallel_00_GPU Hex_CNN
 
-sbatch --partition=beards --gres=gpu:1 --cpus-per-task=38 training_run.sh 30 1 8 PPO 10_Baysian_training Model_bayesian 1
-
+#sbatch --partition=primary --gres=gpu:0 --cpus-per-task=100 training_run.sh 45 2 10 PPO 12_Baysian_training Model_bayesian 0
+#sbatch --partition=primary --gres=gpu:0 --cpus-per-task=100 training_run.sh 45 2 10 PPO 12_Baysian_training Hex_CNN 0
 ##experiment 3
 #sbatch --partition=primary --gres=gpu:0 --cpus-per-task=9 training_run.sh 1 1 8 PPO 3_PPO_parallel Hex_CNN 0
 #sbatch --partition=primary --gres=gpu:0 --cpus-per-task=13 training_run.sh 5 1 8 PPO 3_PPO_parallel Hex_CNN 0
@@ -358,3 +358,10 @@ sbatch --partition=beards --gres=gpu:1 --cpus-per-task=38 training_run.sh 30 1 8
 
 ##eval
 #sbatch training_run.sh 0 0 20 PPO Hex_CNN_GPU
+
+#bayesian dev testing
+sbatch --partition=primary --gres=gpu:0 --cpus-per-task=30 training_run.sh 22 1 8 PPO 19_Bay_hypersearch Hex_CNN 0
+sbatch --partition=primary --gres=gpu:0 --cpus-per-task=30 training_run.sh 20 1 10 PPO 19_Bay_hypersearch dev_net 0
+sbatch --partition=primary --gres=gpu:0 --cpus-per-task=30 training_run.sh 20 1 10 PPO 19_Bay_hypersearch dev_net_with_cnn 0
+#sbatch --partition=primary --gres=gpu:0 --cpus-per-task=30 training_run.sh 22 1 8 AlphaZero 17_Baysian_dev Hex_CNN 0
+#sbatch --partition=primary --gres=gpu:0 --cpus-per-task=30 training_run.sh 22 1 8 PPO 16_Baysian_dev FC_NET 0

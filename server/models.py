@@ -39,9 +39,11 @@ import hexagdly
 #baysian stuff
 import bayesian_torch
 from bayesian_torch import layers as bnn_layers
-from bayesian_torch.layers.variational_layers.linear_variational import LinearVariational
+import bayesian_torch.layers.variational_layers.linear_variational as linear_variational
 
-
+import torch
+from torchvision import models
+from torchsummary import summary
 
 logger = logging.getLogger(__name__)
 #all of the aboce is imported from torch FC base model in an attempt to convert to a CNN hexagly enabled network
@@ -1018,7 +1020,7 @@ class Baysian_network(TorchModelV2, nn.Module):
             )
             for i, out_size in enumerate(layer_sizes):
                 layers.append(
-                    LinearVariational(
+                    linear_variational.LinearReparameterization(
                         in_features=out_channels,
                         out_features=out_size,
                     )
@@ -1051,7 +1053,7 @@ class Baysian_network(TorchModelV2, nn.Module):
                     # Add (optional) post-fc-stack after last Conv2D layer.
                     for i, out_size in enumerate(post_fcnet_hiddens + [num_outputs]):
                         layers.append(
-                            LinearVariational(
+                            linear_variational.LinearReparameterization(
                         in_features=in_size,
                         out_features=out_size,
                     )
@@ -1407,3 +1409,126 @@ class Navy_VisionNetwork(TorchModelV2, nn.Module):
         res = res.squeeze(3)
         res = res.squeeze(2)
         return res
+
+#class builds a simple fully connected nn, implements the following functions
+class dev_model(TorchModelV2, nn.Module):
+    """Generic fully connected network."""
+
+    def __init__(
+        self,
+        obs_space: gym.spaces.Space,
+        action_space: gym.spaces.Space,
+        num_outputs: int,
+        model_config: ModelConfigDict,
+        name: str,
+    ):
+        TorchModelV2.__init__(
+            self, obs_space, action_space, num_outputs, model_config, name
+        )
+        nn.Module.__init__(self)
+
+        #gets the number of hideened networks and adds then to a list
+        hiddens = list(model_config.get("fcnet_hiddens", [])) + list(
+            model_config.get("post_fcnet_hiddens", [])
+        )
+        #gets the activation assignment
+        activation = model_config.get("fcnet_activation")
+        if not model_config.get("fcnet_hiddens", []):
+            activation = model_config.get("post_fcnet_activation")
+
+        #final layer, vf_share layers, and free log std are all bools
+        no_final_linear = model_config.get("no_final_linear")
+        self.vf_share_layers = model_config.get("vf_share_layers")
+        self.free_log_std = model_config.get("free_log_std")
+        # Generate free-floating bias variables for the second half of
+        # the outputs.
+        if self.free_log_std:
+            assert num_outputs % 2 == 0, (
+                "num_outputs must be divisible by two",
+                num_outputs,
+            )
+            num_outputs = num_outputs // 2
+        #above block seems to do nothing usually, TODO check if this is needed
+        layers = []
+        
+
+        prev_layer_size = int(np.product(obs_space.shape))
+        self._logits = None
+
+        #constuction block for layers
+        # Create layers 0 to second-last.
+        for size in hiddens[:-1]:
+            layers.append(
+                linear_variational.LinearReparameterization(
+                    in_features=prev_layer_size,
+                    out_features=size,
+                )
+            )
+            prev_layer_size = size
+
+        #TODO check to delete this block
+        #handels case where no final linear layer is needed
+        # The last layer is adjusted to be of size num_outputs, but it's a
+        # layer with activation.
+
+        if len(hiddens) > 0:
+            layers.append(
+               linear_variational.LinearReparameterization(
+                    in_features=prev_layer_size,
+                    out_features=size,
+                )
+            )
+            prev_layer_size = hiddens[-1]
+        if num_outputs:
+            self._logits = SlimFC(
+                in_size=prev_layer_size,
+                out_size=num_outputs,
+                initializer=normc_initializer(0.01),
+                activation_fn=None,
+            )
+        else:
+            self.num_outputs = ([int(np.product(obs_space.shape))] + hiddens[-1:])[
+                -1
+            ]
+
+        self._hidden_layers = nn.Sequential(*layers)
+
+        self._value_branch_separate = None
+    
+        self._value_branch =  linear_variational.LinearReparameterization(
+                    in_features=prev_layer_size,
+                    out_features=1,
+                )
+        # Holds the current "base" output (before logits layer).
+        self._features = None
+        # Holds the last input, in case value branch is separate.
+        self._last_flat_in = None
+        #print the _hidden_layers model summary
+        print(self._hidden_layers)
+        
+
+    @override(TorchModelV2)
+    def forward(
+        self,
+        input_dict: Dict[str, TensorType],
+        state: List[TensorType],
+        seq_lens: TensorType,
+    ) -> (TensorType, List[TensorType]):
+        obs = input_dict["obs_flat"].float()
+        self._last_flat_in = obs.reshape(obs.shape[0], -1)
+        self._features = self._hidden_layers(self._last_flat_in)
+        logits = self._logits(self._features) if self._logits else self._features
+        if self.free_log_std:
+            logits = self._append_free_log_std(logits)
+        return logits, state
+
+    @override(TorchModelV2)
+    def value_function(self) -> TensorType:
+        assert self._features is not None, "must call forward() first"
+        if self._value_branch_separate:
+            return self._value_branch(
+                self._value_branch_separate(self._last_flat_in)
+            ).squeeze(1)
+        else:
+            return self._value_branch(self._features).squeeze(1)
+  
